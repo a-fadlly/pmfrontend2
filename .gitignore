@@ -1,0 +1,12 @@
+/ncel-pm-ul-laravel/node_modules
+/ncel-pm-ul-laravel/public/hot
+/ncel-pm-ul-laravel/public/storage
+/ncel-pm-ul-laravel/storage/*.key
+/ncel-pm-ul-laravel/vendor
+/ncel-pm-ul-laravel.env
+/ncel-pm-ul-laravel.env.backup
+.phpunit.result.cache
+/ncel-pm-ul-laravelHomestead.json
+/ncel-pm-ul-laravelHomestead.yaml
+/ncel-pm-ul-laravelnpm-debug.log
+/ncel-pm-ul-laravelyarn-error.log

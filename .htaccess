@@ -1,0 +1,5 @@
+RewriteEngine on
+
+#if you want to remove extension for single file
+
+RewriteRule ^login$ login.php [L]

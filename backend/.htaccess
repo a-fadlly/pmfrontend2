@@ -1,0 +1,9 @@
+RewriteEngine on
+
+#if you want to remove extension for single file
+
+RewriteRule ^index$ index.php [L]
+RewriteRule ^inbox$ inbox.php [L]
+RewriteRule ^draft$ draft.php [L]
+RewriteRule ^participated$ participated.php [L]
+RewriteRule ^unassigned$ unassigned.php [L]
