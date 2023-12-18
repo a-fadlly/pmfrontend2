@@ -27,7 +27,6 @@
     padding: 20px;
   }
 
-
   #myModal {
     display: none;
     position: fixed;
