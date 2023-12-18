@@ -7,7 +7,7 @@
 <link href="assets/theme/html/demo2/dist/assets/css/style.bundlef552.css?v=7.1.8" rel="stylesheet" type="text/css" />
 <link rel="shortcut icon" href="https://preview.keenthemes.com/metronic/theme/html/demo2/dist/assets/media/logos/favicon.ico" />
 <link href="assets/theme/html/demo2/dist/assets/plugins/custom/datatables/datatables.bundlef552.css?v=7.1.8" rel="stylesheet" type="text/css" />
-
+//
 <script src="https://kit.fontawesome.com/5d09fddc6f.js" crossorigin="anonymous"></script>
 
 <style>
