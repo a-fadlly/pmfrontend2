@@ -4,120 +4,109 @@ session_start();
 $pmServer    = 'http://192.168.1.244:8000';
 $pmWorkspace = 'workflow';
 
-if (!empty($_SESSION["access_token"])) {
+//for get case info
+function getCaseInfo($url)
+{
+    global $pmServer, $pmWorkspace;
 
-    //for get case info
-    function getCaseInfo($url)
+    // get all case using this url
+    $getCase = curl_init($pmServer . "/api/1.0/" . $pmWorkspace . "/" . $url);
+    curl_setopt($getCase, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $_SESSION["access_token"]));
+    curl_setopt($getCase, CURLOPT_RETURNTRANSFER, true);
+    $data['cases'] = json_decode(curl_exec($getCase));
+    $data['casesStatusCode'] = curl_getinfo($getCase, CURLINFO_HTTP_CODE);
+    curl_close($getCase);
+
+    //echo json data
+    return json_encode($data);
+}
+
+
+//for get dynaform info
+function getDynaformInfo($url)
+{
+    global $pmServer, $pmWorkspace;
+
+    // get all case using this url
+    $getCase = curl_init($pmServer . "/api/1.0/" . $pmWorkspace . "/project/" . $url);
+    curl_setopt($getCase, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $_SESSION["access_token"]));
+    curl_setopt($getCase, CURLOPT_RETURNTRANSFER, true);
+    $data['cases'] = json_decode(curl_exec($getCase));
+    $data['casesStatusCode'] = curl_getinfo($getCase, CURLINFO_HTTP_CODE);
+    curl_close($getCase);
+
+    //echo json data
+    return json_encode($data);
+}
+
+//for get dynaform info
+function getOutputDocs($url)
+{
+    global $pmServer, $pmWorkspace;
+
+    // get all case using this url
+    $getCase = curl_init($pmServer . "/api/1.0/" . $pmWorkspace . "/cases/" . $url . "/output-documents");
+    curl_setopt($getCase, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $_SESSION["access_token"]));
+    curl_setopt($getCase, CURLOPT_RETURNTRANSFER, true);
+    $data['cases'] = json_decode(curl_exec($getCase));
+    $data['casesStatusCode'] = curl_getinfo($getCase, CURLINFO_HTTP_CODE);
+    curl_close($getCase);
+
+    //echo json data
+    return $data;
+}
+
+//for logout
+if (isset($_REQUEST['action'])) {
+    //echo $_REQUEST['action'];
+
+    //session_start();
+    session_destroy();
+    unset($_COOKIE['access_token']);
+    unset($_COOKIE['refresh_token']);
+    unset($_COOKIE['client_id']);
+    unset($_COOKIE['client_secret']);
+
+    //redirect
+    header("Location: ../../login");
+}
+
+//for create case using api
+if (isset($_REQUEST['pro_uid']) && isset($_REQUEST['tas_uid'])) {
+
+    function createNewCase()
     {
         global $pmServer, $pmWorkspace;
 
-        // get all case using this url
-        $getCase = curl_init($pmServer . "/api/1.0/" . $pmWorkspace . "/" . $url);
-        curl_setopt($getCase, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $_SESSION["access_token"]));
-        curl_setopt($getCase, CURLOPT_RETURNTRANSFER, true);
-        $data['cases'] = json_decode(curl_exec($getCase));
-        $data['casesStatusCode'] = curl_getinfo($getCase, CURLINFO_HTTP_CODE);
-        curl_close($getCase);
+        // for create a new case using API
+        $aVars = array(
+            'pro_uid'   => $_REQUEST['pro_uid'],
+            'tas_uid'   => $_REQUEST['tas_uid'],
+            //'variables' => $aCaseVars
+        );
 
-        //echo json data
-        return json_encode($data);
-    }
-
-
-    //for get dynaform info
-    function getDynaformInfo($url)
-    {
-        global $pmServer, $pmWorkspace;
-
-        // get all case using this url
-        $getCase = curl_init($pmServer . "/api/1.0/" . $pmWorkspace . "/project/" . $url);
-        curl_setopt($getCase, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $_SESSION["access_token"]));
-        curl_setopt($getCase, CURLOPT_RETURNTRANSFER, true);
-        $data['cases'] = json_decode(curl_exec($getCase));
-        $data['casesStatusCode'] = curl_getinfo($getCase, CURLINFO_HTTP_CODE);
-        curl_close($getCase);
-
-        //echo json data
-        return json_encode($data);
-    }
-
-    //for get dynaform info
-    function getOutputDocs($url)
-    {
-        global $pmServer, $pmWorkspace;
-
-        // get all case using this url
-        $getCase = curl_init($pmServer . "/api/1.0/" . $pmWorkspace . "/cases/" . $url . "/output-documents");
-        curl_setopt($getCase, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $_SESSION["access_token"]));
-        curl_setopt($getCase, CURLOPT_RETURNTRANSFER, true);
-        $data['cases'] = json_decode(curl_exec($getCase));
-        $data['casesStatusCode'] = curl_getinfo($getCase, CURLINFO_HTTP_CODE);
-        curl_close($getCase);
-
-        //echo json data
-        return formatOutputDocs($data);
-    }
-
-    function formatOutputDocs($data)
-    {
-        $str = "";
-        foreach ($data["cases"] as $doc) {
-            $str .= $doc->app_doc_filename . "<br>";
-        }
-        return $str;
-    }
-
-    //for logout
-    if (isset($_REQUEST['action'])) {
-        //echo $_REQUEST['action'];
-
-        //session_start();
-        session_destroy();
-        unset($_COOKIE['access_token']);
-        unset($_COOKIE['refresh_token']);
-        unset($_COOKIE['client_id']);
-        unset($_COOKIE['client_secret']);
-
-        //redirect
-        header("Location: ../../login");
-    }
-
-    //for create case using api
-    if (isset($_REQUEST['pro_uid']) && isset($_REQUEST['tas_uid'])) {
-
-        function createNewCase()
-        {
-            global $pmServer, $pmWorkspace;
-
-            // for create a new case using API
-            $aVars = array(
-                'pro_uid'   => $_REQUEST['pro_uid'],
-                'tas_uid'   => $_REQUEST['tas_uid'],
-                //'variables' => $aCaseVars
-            );
-
-            //echo "<pre>";
-            /*print_r($aVars);
+        //echo "<pre>";
+        /*print_r($aVars);
                 die();*/
 
-            $ch = curl_init($pmServer . "api/1.0/" . $pmWorkspace . "/cases");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $_SESSION["access_token"]));
-            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $aVars);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $ch = curl_init($pmServer . "api/1.0/" . $pmWorkspace . "/cases");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $_SESSION["access_token"]));
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $aVars);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-            $create_case = json_decode(curl_exec($ch));
-            $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+        $create_case = json_decode(curl_exec($ch));
+        $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-            return json_encode($create_case);
+        return json_encode($create_case);
 
 
-            /*print_r($create_case);
+        /*print_r($create_case);
                 echo '<br>';*/
 
-            /*if ($httpStatus == 200) {
+        /*if ($httpStatus == 200) {
                     // get dynaform details using this url
                     // http://192.168.1.244:8000/api/1.0/{workspace}/project/{prj_uid}/dynaform/{dyn_uid}
                     //here prj_uid = process id and dyn_uid = dynaform id
@@ -135,6 +124,36 @@ if (!empty($_SESSION["access_token"])) {
                     return json_encode($oToken);
 
                 }*/
-        }
     }
+}
+
+function isOverdue($givenDate)
+{
+    $givenDateTime = new DateTime($givenDate);
+
+    $currentDateTime = new DateTime();
+
+    if ($currentDateTime > $givenDateTime) {
+        return '<span style="color: red;">' . $givenDateTime->format('Y-m-d H:i:s') . '</span>';
+    } else {
+        return '<span style="color: green;">' . $givenDateTime->format('Y-m-d H:i:s') . '</span>';
+    }
+}
+
+function active($currect_page)
+{
+    $url_array =  explode('/', $_SERVER['REQUEST_URI']);
+    $url = end($url_array);
+    if ($currect_page == $url) {
+        echo 'active';
+    }
+}
+
+function filterCases($cases, $app_status)
+{
+    $inbox = array_filter($cases, function ($case) use ($app_status) {
+        return $case->app_status === $app_status;
+    });
+    $inbox = array_values($inbox);
+    return $inbox;
 }

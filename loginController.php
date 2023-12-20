@@ -1,7 +1,8 @@
 <?php
 //If saving them as session:
-session_start();
+//session_start();
 //session_destroy();die();
+include 'backend/controller/common.php';
 
 if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
 
@@ -19,7 +20,6 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
 
 	function pmRestLogin($clientId, $clientSecret, $username, $password)
 	{
-
 		global $pmServer, $pmWorkspace;
 
 		$postParams = array(
@@ -60,25 +60,36 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
 			//If planning to use the access_token later, either save the access_token
 			//and refresh_token as cookies or save them to a file in a secure location.
 
-			//If saving them as cookies:
-			setcookie("access_token",  $oToken->access_token,  time() + 86400);
-			setcookie("refresh_token", $oToken->refresh_token); //refresh token doesn't expire
-			setcookie("client_id",     $clientId);
-			setcookie("client_secret", $clientSecret);
+			// //If saving them as cookies:
+			// setcookie("access_token",  $oToken->access_token,  time() + 86400);
+			// setcookie("refresh_token", $oToken->refresh_token); //refresh token doesn't expire
+			// setcookie("client_id",     $clientId);
+			// setcookie("client_secret", $clientSecret);
 
 			//If saving them as session:
-			$_SESSION["access_token"] 	= $oToken->access_token; //,  time() + 86400
-			$_SESSION["refresh_token"] 	= $oToken->refresh_token; //refresh token doesn't expire
-			$_SESSION["client_id"] 		= $clientId;
-			$_SESSION["client_secret"] 	= $clientSecret;
+			$_SESSION["access_token"] = $oToken->access_token; //,  time() + 86400
+			$_SESSION["refresh_token"] = $oToken->refresh_token; //refresh token doesn't expire
+			$_SESSION["client_id"] = $clientId;
+			$_SESSION["client_secret"] = $clientSecret;
 
+			$users = json_decode(getCaseInfo('users'));
+
+			foreach ($users->cases as $u) {
+				if ($u->usr_username == $_SESSION['username']) {
+					$_SESSION['usr_firstname'] = $u->usr_firstname;
+					$_SESSION['usr_lastname'] = $u->usr_lastname;
+					$_SESSION['usr_uid'] = $u->usr_uid;
+					$_SESSION['usr_email'] = $u->usr_email;
+					$_SESSION['usr_position'] = $u->usr_position;
+				}
+			}
 
 			//If saving to a file:
 			//file_put_contents("/secure/location/oauthAccess.json", json_encode($tokenData));
 
 			//echo $_SESSION["access_token"] .'<br>'; die();
 			//redirect dashboard
-			header("Location: backend/index");
+			header("Location: backend/participated2.php");
 		}
 	}
 
