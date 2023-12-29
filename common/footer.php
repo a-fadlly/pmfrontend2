@@ -24,13 +24,15 @@
     <!--begin::Header-->
     <div class="d-flex align-items-center mt-5">
       <div class="symbol symbol-100 mr-5">
-        <div class="symbol-label" style="background-image:url('../assets/media/users/300_21.jpg')"></div>
+        <div class="symbol-label" style="background-image:url('assets/media/users/300_21.jpg')"></div>
       </div>
       <div class="d-flex flex-column">
         <a href="#" class="font-weight-bold font-size-h5 text-dark-75 text-hover-primary">
           <?= $_SESSION['usr_firstname'] . ' ' . $_SESSION['usr_lastname'] ?>
         </a>
-        <div class="text-muted mt-1"><?= $_SESSION['usr_position'] ?></div>
+        <div class="text-muted mt-1">
+            <?= $_SESSION['usr_position'] ?>
+        </div>
         <div class="navi mt-2">
           <a href="#" class="navi-item">
             <span class="navi-link p-0 pb-2">

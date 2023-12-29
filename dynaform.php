@@ -66,7 +66,7 @@ if (empty($_SESSION["access_token"])) {
                         <!--end::Item-->
                         <!--begin::Item-->
                         <span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
-                        <a href="index" class="text-white text-hover-white opacity-75 hover-opacity-100">Cases</a>
+                        <a href="index.php" class="text-white text-hover-white opacity-75 hover-opacity-100">Cases</a>
                         <!--end::Item-->
                         <!--begin::Item-->
                         <span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>

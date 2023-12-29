@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!empty($_SESSION["access_token"])) {
-    header("Location: index");
+    header("Location: index.php");
 }
 ?>
 <!DOCTYPE html>

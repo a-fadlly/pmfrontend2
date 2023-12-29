@@ -33,7 +33,7 @@ if (empty($_SESSION["access_token"])) {
             <!--end::Item-->
             <!--begin::Item-->
             <span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
-            <a href="index" class="text-white text-hover-white opacity-75 hover-opacity-100">Cases</a>
+            <a href="index.php" class="text-white text-hover-white opacity-75 hover-opacity-100">Cases</a>
             <!--end::Item-->
             <!--begin::Item-->
             <span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
@@ -205,7 +205,7 @@ if (empty($_SESSION["access_token"])) {
       if (httpStatus === 200 || httpStatus === 201 || httpStatus === 204) {
         pmRestRequest("PUT", "/api/1.0/workflow/cases/<?= $app_uid ?>/route-case", false, null);
         if (httpStatus === 200 || httpStatus === 204) {
-          window.location.href = "index";
+          window.location.href = "cases.php";
         }
       }
     });

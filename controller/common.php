@@ -21,7 +21,6 @@ function getCaseInfo($url)
     return json_encode($data);
 }
 
-
 //for get dynaform info
 function getDynaformInfo($url)
 {
@@ -58,17 +57,17 @@ function getOutputDocs($url)
 
 //for logout
 if (isset($_REQUEST['action'])) {
-    //echo $_REQUEST['action'];
+    if ($_REQUEST['action'] === 'logout') {
+        //session_start();
+        session_destroy();
+        unset($_COOKIE['access_token']);
+        unset($_COOKIE['refresh_token']);
+        unset($_COOKIE['client_id']);
+        unset($_COOKIE['client_secret']);
 
-    //session_start();
-    session_destroy();
-    unset($_COOKIE['access_token']);
-    unset($_COOKIE['refresh_token']);
-    unset($_COOKIE['client_id']);
-    unset($_COOKIE['client_secret']);
-
-    //redirect
-    header("Location: ../login.php");
+        //redirect
+        header("Location: ../login.php");
+    }
 }
 
 //for create case using api
