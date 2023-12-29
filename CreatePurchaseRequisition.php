@@ -30,7 +30,7 @@ if (empty($_SESSION["access_token"])) {
             <!--end::Item-->
             <!--begin::Item-->
             <span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
-              <a href="index.php" class="text-white text-hover-white opacity-75 hover-opacity-100">Cases</a>
+            <a href="index.php" class="text-white text-hover-white opacity-75 hover-opacity-100">Cases</a>
             <!--end::Item-->
             <!--begin::Item-->
             <span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
@@ -315,40 +315,40 @@ if (empty($_SESSION["access_token"])) {
 <script>
   $(document).ready(function() {
     $('#rqd_part_placeholder_list').on('input', function() {
-        const resultsContainer = $('#autocomplete-results');
-        const input = $('#rqd_part_placeholder_list').val();
-        if (input.length === 0) {
-            resultsContainer.hide();
-        } else {
-            resultsContainer.empty();
+      const resultsContainer = $('#autocomplete-results');
+      const input = $('#rqd_part_placeholder_list').val();
+      if (input.length === 0) {
+        resultsContainer.hide();
+      } else {
+        resultsContainer.empty();
 
-            $.ajax({
-                url: `fetch_items.php?input=${input}`,
-                method: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    data.forEach(item => {
-                        const resultDiv = $('<div class="result"></div>');
-                        resultDiv.text(item.PT_PART + " " + item.PT_DESC1_2);
-                        resultDiv.on('click', function () {
-                            $('#rqd_part_placeholder_list').val(item.PT_PART + " " + item.PT_DESC1_2);
-                            $('#rqd_part_list').val(item.PT_PART);
-                            $('#rqd_desc_list').val(item.PT_DESC1_2);
-                            $('#rqd_um_list').val(item.PT_PVM_UM);
+        $.ajax({
+          url: `fetch_items.php?input=${input}`,
+          method: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            data.forEach(item => {
+              const resultDiv = $('<div class="result"></div>');
+              resultDiv.text(item.PT_PART + " " + item.PT_DESC1_2);
+              resultDiv.on('click', function() {
+                $('#rqd_part_placeholder_list').val(item.PT_PART + " " + item.PT_DESC1_2);
+                $('#rqd_part_list').val(item.PT_PART);
+                $('#rqd_desc_list').val(item.PT_DESC1_2);
+                $('#rqd_um_list').val(item.PT_PVM_UM);
 
-                            resultsContainer.hide();
-                        });
+                resultsContainer.hide();
+              });
 
-                        resultsContainer.append(resultDiv);
-                    });
-
-                    resultsContainer.show();
-                },
-                error: function (error) {
-                    console.error('Error fetching data:', error);
-                }
+              resultsContainer.append(resultDiv);
             });
-        }
+
+            resultsContainer.show();
+          },
+          error: function(error) {
+            console.error('Error fetching data:', error);
+          }
+        });
+      }
     });
 
     KTBootstrapDatepicker.init();
@@ -515,7 +515,7 @@ if (empty($_SESSION["access_token"])) {
         pmRestRequest("PUT", "/api/1.0/workflow/cases/" + oResponse['app_uid'] + "/route-case", false, null);
 
         if (httpStatus === 200) {
-            //window.location.href = "index.php";
+          //window.location.href = "index.php";
         }
       }
     });
