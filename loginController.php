@@ -2,15 +2,15 @@
 //If saving them as session:
 //session_start();
 //session_destroy();die();
-include 'backend/controller/common.php';
+include 'controller/common.php';
 
 if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
 
 	$username 		= $_REQUEST['username'];
 	$password 		= $_REQUEST['password'];
-	$clientId 		= 'GUMPYDUPIQJIKWYEPWSXYIJYXHFCKIWS';
+    $clientId = 'GUMPYDUPIQJIKWYEPWSXYIJYXHFCKIWS';
 	$clientSecret 	= '927886962657fafcfa27639014705514';
-	$pmServer    	= 'http://192.168.1.244:8000';
+    $pmServer = 'http://192.168.1.244:8000';
 	$pmWorkspace 	= 'workflow';
 
 	//set username using session
@@ -60,11 +60,11 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
 			//If planning to use the access_token later, either save the access_token
 			//and refresh_token as cookies or save them to a file in a secure location.
 
-			// //If saving them as cookies:
-			// setcookie("access_token",  $oToken->access_token,  time() + 86400);
-			// setcookie("refresh_token", $oToken->refresh_token); //refresh token doesn't expire
-			// setcookie("client_id",     $clientId);
-			// setcookie("client_secret", $clientSecret);
+            //If saving them as cookies:
+            setcookie("access_token", $oToken->access_token, time() + 86400);
+            setcookie("refresh_token", $oToken->refresh_token); //refresh token doesn't expire
+            setcookie("client_id", $clientId);
+            setcookie("client_secret", $clientSecret);
 
 			//If saving them as session:
 			$_SESSION["access_token"] = $oToken->access_token; //,  time() + 86400
@@ -76,9 +76,9 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
 
 			foreach ($users->cases as $u) {
 				if ($u->usr_username == $_SESSION['username']) {
+                    $_SESSION['usr_uid'] = $u->usr_uid;
 					$_SESSION['usr_firstname'] = $u->usr_firstname;
 					$_SESSION['usr_lastname'] = $u->usr_lastname;
-					$_SESSION['usr_uid'] = $u->usr_uid;
 					$_SESSION['usr_email'] = $u->usr_email;
 					$_SESSION['usr_position'] = $u->usr_position;
 				}
@@ -89,7 +89,7 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
 
 			//echo $_SESSION["access_token"] .'<br>'; die();
 			//redirect dashboard
-			header("Location: backend/participated2.php");
+            header("Location: index.php");
 		}
 	}
 
