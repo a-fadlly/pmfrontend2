@@ -31,8 +31,6 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
             'password' => $password
         );
 
-        //print_r($postParams);die();
-
         $ch = curl_init("$pmServer/$pmWorkspace/oauth2/token");
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -42,9 +40,6 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
         $oToken = json_decode(curl_exec($ch));
         $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-
-        //for check access token
-        //print_r($oToken);die();
 
         if ($httpStatus != 200) {
             print "Error in HTTP status code: $httpStatus\n";
@@ -87,8 +82,6 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
             //If saving to a file:
             //file_put_contents("/secure/location/oauthAccess.json", json_encode($tokenData));
 
-            //echo $_SESSION["access_token"] .'<br>'; die();
-            //redirect dashboard
             header("Location: index.php");
         }
     }

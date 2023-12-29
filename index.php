@@ -66,8 +66,6 @@ if (empty($_SESSION["access_token"])) {
                         </div>
                     </div>
                 </div>
-
-
             </div>
             <!--end::Container-->
         </div>

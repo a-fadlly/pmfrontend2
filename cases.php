@@ -6,10 +6,14 @@ if (empty($_SESSION["access_token"])) {
     header("Location: login");
 } else {
     $accessCase   = json_decode(getCaseInfo('cases/start-cases'));
-    $participated = json_decode(getCaseInfo('cases/participated/paged?limit=1000'));
+    $cases = json_decode(getCaseInfo('cases/participated/paged?limit=1000'));
 
-    $inbox = filterCases($participated->cases->data, 'TO_DO');
-    $draft = filterCases($participated->cases->data, 'DRAFT');
+    $participated = $cases->cases->data;
+    $inbox = filterCases($cases->cases->data, 'TO_DO');
+    $draft = filterCases($cases->cases->data, 'DRAFT');
+    $paused = json_decode(getCaseInfo('cases/paused'));
+
+//    print_r(json_encode($paused));
 }
 ?>
 
@@ -87,7 +91,7 @@ if (empty($_SESSION["access_token"])) {
                                         <span class="navi-icon"><i class="fa-solid fa-file-export"></i></span>
                                         <span class="navi-text">Particpatd</span>
                                         <span class="navi-label">
-                                            <span class="label label-danger"><?= count($participated->cases->data) ?></span>
+                                            <span class="label label-danger"><?= count($participated) ?></span>
                                         </span>
                                     </a>
                                 </li>
@@ -105,7 +109,7 @@ if (empty($_SESSION["access_token"])) {
                                         <span class="navi-icon"><i class="fa-solid fa-pause"></i></span>
                                         <span class="navi-text">Paused</span>
                                         <span class="navi-label">
-                                            <span class="label label-danger">0</span>
+                                            <span class="label label-danger"><?= count($paused->cases) ?></span>
                                         </span>
                                     </a>
                                 </li>
@@ -117,22 +121,6 @@ if (empty($_SESSION["access_token"])) {
                     <!--begin::Card-->
                     <div class="card card-custom">
                         <div class="tab-content">
-                            <div class="tab-pane fade" id="kt_tab_pane_0_4" role="tabpanel" aria-labelledby="kt_tab_pane_0_4">
-                                <div class="card-header flex-wrap border-0 pt-6 pb-0">
-                                    <div class="card-title">
-                                        <h3 class="card-label">New Case
-                                            <span class="d-block text-muted pt-2 font-size-sm">
-                                                Users who have been assigned to work on a task after a start event can see the list of processes that contain new tasks assigned to them by clicking on New Case.
-                                            </span>
-                                        </h3>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        asdfghjkl
-                                    </div>
-                                </div>
-                            </div>
                             <div class="tab-pane fade show active" id="kt_tab_pane_1_4" role="tabpanel" aria-labelledby="kt_tab_pane_1_4">
                                 <div class="card-header flex-wrap border-0 pt-6 pb-0">
                                     <div class="card-title">
@@ -171,16 +159,13 @@ if (empty($_SESSION["access_token"])) {
                                                 <?php
                                                 if (!empty($inbox)) {
                                                     // var_dump(json_encode($inbox));
-
                                                     foreach ($inbox as $key => $d) {
-
                                                         $url = "";
                                                         if ($d->app_tas_title == "Departement Head Approval") {
-                                                            $url = "DeptHeadApproval.php?app_uid=" . $d->app_uid;
+                                                            $url = "ApprovalDeptHead.php?app_uid=" . $d->app_uid;
                                                         } else {
                                                             $url = "http://192.168.1.244:8000/sysworkflow/en/neoclassic/cases/opencase/" . $d->app_uid;
-                                                        }
-                                                ?>
+                                                        } ?>
                                                         <tr>
                                                             <td><a href="<?= $url ?>"><?= $d->app_number ?></a></td>
                                                             <td><?= $d->app_title ?></td>
@@ -249,7 +234,7 @@ if (empty($_SESSION["access_token"])) {
                                             <tbody>
                                                 <?php
                                                 if (!empty($participated)) {
-                                                    foreach ($participated->cases->data as $key => $d) {
+                                                    foreach ($participated as $key => $d) {
                                                 ?>
                                                         <tr>
                                                             <td><a href="http://192.168.1.244:8000/sysworkflow/en/neoclassic/cases/opencase/<?= $d->app_uid ?>"><?= $d->app_number ?></a></td>
@@ -339,7 +324,74 @@ if (empty($_SESSION["access_token"])) {
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="kt_tab_pane_4_4" role="tabpanel" aria-labelledby="kt_tab_pane_4_4">
-                                TO DO
+                                <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                                    <div class="card-title">
+                                        <h3 class="card-label">Draft
+                                            <span class="d-block text-muted pt-2 font-size-sm">A case status changes to "draft" when the assigned user has started to work on the current task, but has not completed it</span>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <label>Process:
+                                        <select class="form-control draft-column-filter" data-column="2">
+                                            <option value="">-</option>
+                                            <option value="Purchase Request">Purchase Request</option>
+                                            <option value="Test 3">Test 3</option>
+                                            <option value="Test Input Qad">Test Input Qad</option>
+                                            <option value="Test Input Qad (2)">Test Input Qad (2)</option>
+                                        </select>
+                                    </label>
+                                    <div class="table-responsive">
+                                        <table class="table table-head-custom table-vertical-center" id="draft-table">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Case</th>
+                                                <th>Process</th>
+                                                <th>Task</th>
+                                                <th>Current User</th>
+                                                <th>Status</th>
+                                                <th>Due Date</th>
+                                                <th>Last Modification</th>
+                                                <!-- <th>Priority</th> -->
+                                                <th>Output Docs</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <?php
+                                            if (!empty($paused)) {
+                                                foreach ($paused->cases as $key => $d) {
+                                                    ?>
+                                                    <tr>
+                                                        <td>
+                                                            <a href="http://192.168.1.244:8000/sysworkflow/en/neoclassic/cases/opencase/<?= $d->app_uid ?>"><?= $d->app_number ?></a>
+                                                        </td>
+                                                        <td><?= $d->app_title ?></td>
+                                                        <td><?= $d->app_pro_title ?></td>
+                                                        <td><?= $d->app_pro_title ?></td>
+                                                        <td><?= $d->app_tas_title ?></td>
+                                                        <td><?= $d->app_current_user ?></td>
+                                                        <td><?= $d->app_status_label ?></td>
+                                                        <td><?= isOverdue($d->del_task_due_date) ?></td>
+                                                        <td><?= $d->del_delegate_date ?></td>
+                                                        <!-- <td><?= $d->del_priority ?></td> -->
+                                                        <td>
+                                                            <button type="button"
+                                                                    class="btn btn-sm btn-outline-primary py-0"
+                                                                    style="font-size: 0.8em;" data-toggle="modal"
+                                                                    data-target="#exampleModal"
+                                                                    data-app-uid="<?= $d->app_uid ?>">
+                                                                View
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                <?php }
+                                            } ?>
+                                            </tbody>
+                                        </table>
+                                        <!--end: Datatable-->
+                                    </div>
+                                </div>
                             </div>
                             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
