@@ -323,7 +323,7 @@ if (empty($_SESSION["access_token"])) {
         resultsContainer.empty();
 
         $.ajax({
-          url: `fetch_items.php?input=${input}`,
+            url: `api/fetch_items.php?input=${input}`,
           method: 'GET',
           dataType: 'json',
           success: function(data) {
@@ -414,8 +414,8 @@ if (empty($_SESSION["access_token"])) {
       var gridDetails = {};
       gridDetailsTable.rows().data().each(function(value) {
         var rowObject = {
-          "rqd_line_list": "1",
-          "rqd_line_list_label": "1",
+            "rqd_line_list": value[0],
+            "rqd_line_list_label": value[0],
 
           'rqd_part_list': value[1],
           'rqd_part_list_label': value[1],
@@ -513,10 +513,13 @@ if (empty($_SESSION["access_token"])) {
       if (httpStatus === 200 && oResponse) {
 
         pmRestRequest("PUT", "/api/1.0/workflow/cases/" + oResponse['app_uid'] + "/route-case", false, null);
-
         if (httpStatus === 200) {
-          //window.location.href = "index.php";
+            window.location.href = "index.php";
+        } else {
+            alert("Error");
         }
+      } else {
+          alert("Error");
       }
     });
   });

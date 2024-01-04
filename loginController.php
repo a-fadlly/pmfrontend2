@@ -37,33 +37,35 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postParams);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        $oToken = json_decode(curl_exec($ch));
+        $response = json_decode(curl_exec($ch));
         $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         if ($httpStatus != 200) {
-            print "Error in HTTP status code: $httpStatus\n";
-            return null;
-        } elseif (isset($oToken->error)) {
+            header("Location:login.php?error=$response->error_description");
+            exit();
+//            print "Error in HTTP status code: $httpStatus\n";
+//            return null;
+        } elseif (isset($response->error)) {
             echo "Error logging into $pmServer:\n" .
-                "Error:       {$oToken->error}\n" .
-                "Description: {$oToken->error_description}\n";
+                "Error:       {$response->error}\n" .
+                "Description: {$response->error_description}\n";
             die();
         } else {
-            //At this point $oToken->access_token can be used to call REST endpoints.
+            //At this point $response->access_token can be used to call REST endpoints.
 
             //If planning to use the access_token later, either save the access_token
             //and refresh_token as cookies or save them to a file in a secure location.
 
             //If saving them as cookies:
-            setcookie("access_token", $oToken->access_token, time() + 86400);
-            setcookie("refresh_token", $oToken->refresh_token); //refresh token doesn't expire
+            setcookie("access_token", $response->access_token, time() + 86400);
+            setcookie("refresh_token", $response->refresh_token); //refresh token doesn't expire
             setcookie("client_id", $clientId);
             setcookie("client_secret", $clientSecret);
 
             //If saving them as session:
-            $_SESSION["access_token"] = $oToken->access_token; //,  time() + 86400
-            $_SESSION["refresh_token"] = $oToken->refresh_token; //refresh token doesn't expire
+            $_SESSION["access_token"] = $response->access_token; //,  time() + 86400
+            $_SESSION["refresh_token"] = $response->refresh_token; //refresh token doesn't expire
             $_SESSION["client_id"] = $clientId;
             $_SESSION["client_secret"] = $clientSecret;
 

@@ -142,7 +142,7 @@ if (empty($_SESSION["access_token"])) {
                                 <td><?php echo $item->rqd_um_list_label ?></td>
                                 <td><?php echo $item->rqd_due_date_list_label ?></td>
                                 <td><?php echo $item->rqd_need_date_list_label ?></td>
-                                <td><?php echo $item->rqd_acct_list_label ?></td>
+                                <td><?php echo $item->rqd_acct_desc_list ?></td>
                                 <td><?php echo $item->comment_line_list_label ?></td>
                               </tr>
                           <?php endforeach;
@@ -191,22 +191,27 @@ if (empty($_SESSION["access_token"])) {
   </div>
   <!--end::Entry-->
 </div>
-<!--end::Content-->
-<script>
+    <!--end::Content-->
+    <script>
   $(document).ready(function() {
     $('#form').submit(function(event) {
       event.preventDefault();
 
+      var isApprovedValue = $('input[name="is_approved"]:checked').val();
       var oVars = {
-        "approvalDeptHead": $('input[name="is_approved"]:checked').val(),
-        "approvalDeptHead_label": $('input[name="is_approved"]:checked').val() == '1' ? "Yes" : "No",
-      };
+            "approvalDeptHead": isApprovedValue,
+            "approvalDeptHead_label": isApprovedValue === '1' ? "Yes" : "No",
+        };
       pmRestRequest("POST", "/api/1.0/workflow/variable/<?= $app_uid ?>/2/variable/approvalDeptHead", false, oVars);
       if (httpStatus === 200 || httpStatus === 201 || httpStatus === 204) {
         pmRestRequest("PUT", "/api/1.0/workflow/cases/<?= $app_uid ?>/route-case", false, null);
         if (httpStatus === 200 || httpStatus === 204) {
           window.location.href = "cases.php";
+        } else {
+            alert("Error");
         }
+      } else {
+          alert("Error");
       }
     });
   });

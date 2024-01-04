@@ -161,7 +161,7 @@ if (empty($_SESSION["access_token"])) {
                                                     // var_dump(json_encode($inbox));
                                                     foreach ($inbox as $key => $d) {
                                                         $url = "";
-                                                        if ($d->app_tas_title == "Departement Head Approval") {
+                                                        if ($d->app_tas_title == "Departement Head Approval" && $d->app_pro_title == "Purchase Request V.02") {
                                                             $url = "ApprovalDeptHead.php?app_uid=" . $d->app_uid;
                                                         } else {
                                                             $url = "http://192.168.1.244:8000/sysworkflow/en/neoclassic/cases/opencase/" . $d->app_uid;
@@ -460,7 +460,7 @@ if (empty($_SESSION["access_token"])) {
             modalContent.empty();
 
             $.ajax({
-                url: 'api_request.php',
+                url: 'api/fetch_documents.php',
                 type: 'GET',
                 data: {
                     app_uid: appUid
