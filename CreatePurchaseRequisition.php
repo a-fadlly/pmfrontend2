@@ -64,9 +64,9 @@ if (empty($_SESSION["access_token"])) {
             </div>
             <!--begin::Form-->
             <form id="form" class="form">
-              <div class="card-body">
+              <div class="card-body p-15">
                 <h3 class="font-size-lg text-dark font-weight-bold mb-6">1. Info:</h3>
-                <div class="form-group row">
+                <div class="form-group row ">
 
                   <input type="hidden" id="usr_uid" value="<?= $_SESSION['usr_uid'] ?>">
                   <input type="hidden" id="usr_firstname" value="<?= $_SESSION['usr_firstname'] ?>">
@@ -88,7 +88,7 @@ if (empty($_SESSION["access_token"])) {
                     <input type="text" class="form-control" value="MTM2" id="rqm_entity" disabled />
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row ">
                   <div class="col-lg-4">
                     <label>Requisition Date:</label>
                     <div class="input-group">
@@ -123,7 +123,7 @@ if (empty($_SESSION["access_token"])) {
                     </div>
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row ">
                   <div class="col-lg-4">
                     <label>Reason:</label>
                     <input type="text" class="form-control" id="rqm_reason" />
@@ -137,15 +137,15 @@ if (empty($_SESSION["access_token"])) {
                     <input type="text" class="form-control" id="rqm_rmks" />
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row ">
                   <div class="col-lg-12">
                     <label>Comment header:</label>
                     <textarea class="form-control" id="comment_header"></textarea>
                   </div>
                 </div>
                 <!-- item -->
-                <h3 class="font-size-lg text-dark font-weight-bold mb-6">2. Item:</h3>
-                <div class="form-group row">
+                <h3 class="font-size-lg text-dark font-weight-bold mb-6">2. Items:</h3>
+                <div class="form-group row ">
                   <div class="col-lg-4">
                     <label>Item Number:</label>
                     <input type="text" class="form-control" id="rqd_part_placeholder_list" />
@@ -162,7 +162,7 @@ if (empty($_SESSION["access_token"])) {
                     <input type="text" class="form-control" id="rqd_um_list" disabled />
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row ">
                   <div class="col-lg-4">
                     <label>Requisition Date:</label>
                     <div class="input-group">
@@ -190,18 +190,18 @@ if (empty($_SESSION["access_token"])) {
                     <input type="text" class="form-control" id="rqd_acct_list" />
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row ">
                   <div class="col-lg-12">
                     <label>Comment:</label>
                     <textarea class="form-control" id="comment_line_list"></textarea>
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row ">
                   <div class="col-lg-12">
-                    <button type="button" class="btn btn-primary" onclick="addGridDetail()">Add</button>
+                    <button type="button" class="btn btn-primary btn-pill btn-sm" onclick="addGridDetail()">Add</button>
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row ">
                   <div class="col-lg-12">
                     <div class="table-responsive">
                       <table class="table table-head-custom table-vertical-center" id="grid-details-table">
@@ -226,7 +226,7 @@ if (empty($_SESSION["access_token"])) {
                     </div>
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row ">
                   <div class="col-lg-12">
                     <label>Purchase Request Analysis:</label>
                     <textarea class="form-control" id="catatan_analisa"></textarea>
@@ -323,7 +323,7 @@ if (empty($_SESSION["access_token"])) {
         resultsContainer.empty();
 
         $.ajax({
-            url: `api/fetch_items.php?input=${input}`,
+          url: `api/fetch_items.php?input=${input}`,
           method: 'GET',
           dataType: 'json',
           success: function(data) {
@@ -369,29 +369,33 @@ if (empty($_SESSION["access_token"])) {
       var rqd_acct_list = $('#rqd_acct_list').val();
       var comment_line_list = $('#comment_line_list').val();
 
-      gridDetailsTable.row.add([
-          line++,
-          rqd_part_list,
-          rqd_desc_list,
-          rqd_req_qty_list,
-          rqd_um_list,
-          rqd_due_date_list,
-          rqd_need_date_list,
-          rqd_acct_list,
-          comment_line_list,
-          '<a href="javascript:;" title="Delete" onclick="deleteGridDetail(this);return false;"><span class="svg-icon svg-icon-md"><i class="fa-solid fa-trash"></i></span></a>'
-        ])
-        .draw();
+      if (typeof rqd_part_list === "string" && rqd_part_list.length === 0) {
+        
+      } else {
+        gridDetailsTable.row.add([
+            line++,
+            rqd_part_list,
+            rqd_desc_list,
+            rqd_req_qty_list,
+            rqd_um_list,
+            rqd_due_date_list,
+            rqd_need_date_list,
+            rqd_acct_list,
+            comment_line_list,
+            '<a href="javascript:;" title="Delete" onclick="deleteGridDetail(this);return false;"><span class="svg-icon svg-icon-md"><i class="fa-solid fa-trash"></i></span></a>'
+          ])
+          .draw();
 
-      $('#rqd_part_list').val('');
-      $('#rqd_part_placeholder_list').val('');
-      $('#rqd_desc_list').val('');
-      $('#rqd_req_qty_list').val('');
-      $('#rqd_um_list').val('');
-      $('#rqd_due_date_list').val('');
-      $('#rqd_need_date_list').val('');
-      $('#rqd_acct_list').val('');
-      $('#comment_line_list').val('');
+        $('#rqd_part_list').val('');
+        $('#rqd_part_placeholder_list').val('');
+        $('#rqd_desc_list').val('');
+        $('#rqd_req_qty_list').val('');
+        $('#rqd_um_list').val('');
+        $('#rqd_due_date_list').val('');
+        $('#rqd_need_date_list').val('');
+        $('#rqd_acct_list').val('');
+        $('#comment_line_list').val('');
+      }
     };
 
     window.deleteGridDetail = function(button) {
@@ -414,8 +418,8 @@ if (empty($_SESSION["access_token"])) {
       var gridDetails = {};
       gridDetailsTable.rows().data().each(function(value) {
         var rowObject = {
-            "rqd_line_list": value[0],
-            "rqd_line_list_label": value[0],
+          "rqd_line_list": value[0],
+          "rqd_line_list_label": value[0],
 
           'rqd_part_list': value[1],
           'rqd_part_list_label': value[1],
@@ -514,12 +518,12 @@ if (empty($_SESSION["access_token"])) {
 
         pmRestRequest("PUT", "/api/1.0/workflow/cases/" + oResponse['app_uid'] + "/route-case", false, null);
         if (httpStatus === 200) {
-            window.location.href = "index.php";
+          window.location.href = "index.php";
         } else {
-            alert("Error");
+          alert("Error");
         }
       } else {
-          alert("Error");
+        alert("Error");
       }
     });
   });

@@ -51,9 +51,31 @@ class ReminderQCController
     }
   }
 
+  public function getProduct($id)
+  {
+    $query = "
+    SELECT * FROM products WHERE id = ?";
+
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row;
+  }
+
   public function getProducts()
   {
-    $query = "SELECT * FROM products";
+    $query = "
+      SELECT 
+        p.id AS id,
+        p.number AS number,
+        p.name AS name,
+        COUNT(b.id) AS batch_count
+      FROM products p
+      LEFT JOIN batches b ON p.id = b.product_id
+      GROUP BY p.id
+      ";
     $result = $this->db->query($query);
 
     $items = array();
@@ -64,20 +86,28 @@ class ReminderQCController
     return $items;
   }
 
-  public function getItem($itemId)
-  {
-    $query = "SELECT * FROM items WHERE id = ?";
-    $stmt = $this->db->prepare($query);
-    $stmt->bind_param('i', $itemId);
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-    return $result->fetch_assoc();
-  }
-
   public function getBatchesByProduct($id)
   {
-    $query = "SELECT products.number, products.name, batches.`id`, `product_id`, `batch_number`, `mfg_date`, `exp_date`, `sample_date`, `types`, `storage_conditions`, `packaging_type`, `status`, batches.`created_at`, batches.`updated_at` FROM `batches` INNER JOIN products ON products.id = batches.product_id WHERE product_id = ?";
+    $query = "
+    SELECT 
+      products.number, 
+      products.name, 
+      batches.id, 
+      product_id, 
+      batch_number, 
+      mfg_date, 
+      exp_date, 
+      sample_date, 
+      types, 
+      storage_conditions, 
+      packaging_type,
+      status, 
+      batches.created_at, 
+      batches.updated_at 
+    FROM batches
+    INNER JOIN products ON products.id = batches.product_id 
+    WHERE product_id = ?";
+
     $stmt = $this->db->prepare($query);
     $stmt->bind_param('i', $id);
     $stmt->execute();
@@ -136,17 +166,25 @@ class ReminderQCController
     return $stmt->execute();
   }
 
-  public function getCalendarEvent()
+  public function getCalendarEvents()
   {
     $query = "
-    SELECT
-      tests.id,
-      CONCAT(tests.type, ' ', products.number, ' ', products.name) AS title, 
-      date AS start, 'red' AS color 
-    FROM tests 
+      SELECT
+        tests.id,
+        CONCAT('[',UPPER(LEFT(tests.type, 1)), '] ', batches.batch_number, ' ', products.name) AS title, 
+        date AS start,
+        CASE 
+          WHEN date >= CURDATE() AND tests.sample_received = 0 AND tests.status = 0 THEN 'orange'
+          WHEN date < CURDATE() AND tests.sample_received = 0 AND tests.status = 0 THEN 'red'
+          WHEN date >= CURDATE() AND tests.sample_received = 1 AND tests.status = 0 THEN 'brown'
+          WHEN tests.status = 1 THEN 'green'
+          ELSE 'black'
+        END AS color,
+        tests.status
+      FROM tests 
       JOIN batches ON tests.batch_id = batches.id 
-      JOIN products ON batches.product_id = products.id
-    ";
+      JOIN products ON batches.product_id = products.id;
+      ";
 
     $result = $this->db->query($query);
 
@@ -168,12 +206,13 @@ class ReminderQCController
       products.name AS product_name,
       date,
       tests.status,
+      tests.sample_received,
       tests.handover
     FROM tests
-      JOIN batches ON tests.batch_id = batches.id
-      JOIN products ON batches.product_id = products.id
-    WHERE
-      tests.id = ?";
+    JOIN batches ON tests.batch_id = batches.id
+    JOIN products ON batches.product_id = products.id
+    WHERE tests.id = ?
+    ";
 
     $stmt = $this->db->prepare($query);
     $stmt->bind_param('i', $id);
@@ -202,19 +241,15 @@ class ReminderQCController
     JOIN batches b ON p.id = b.product_id
     LEFT JOIN tests t ON b.id = t.batch_id
     WHERE b.id = ?
-";
+    ";
 
-    // Prepare and bind the statement
     $stmt = $this->db->prepare($query);
     $stmt->bind_param('i', $batch_id);
 
-    // Execute the query
     $stmt->execute();
 
-    // Get the result
     $result = $stmt->get_result();
 
-    // Fetch the results
     $formattedData = [];
 
     while ($row = $result->fetch_assoc()) {
@@ -224,7 +259,6 @@ class ReminderQCController
       $formattedData['mfg_date'] = $row['mfg_date'];
       $formattedData['exp_date'] = $row['exp_date'];
       $formattedData['types'] = $row['types'];
-
       $formattedData['tests'][] = [
         'id' => $row['id'],
         'type' => $row['type'],
@@ -253,21 +287,17 @@ class ReminderQCController
     INNER JOIN batches b ON t.batch_id = b.id
     INNER JOIN products p ON b.product_id = p.id
     WHERE t.id = ?
-";
+    ";
 
-    // Prepare and bind the statement
     $stmt = $this->db->prepare($query);
     $stmt->bind_param('i', $id);
 
     $stmt->execute();
 
-    // Get the result set from the prepared statement
     $result = $stmt->get_result();
 
-    // Fetch the result as an associative array
     $row = $result->fetch_assoc();
 
-    // Construct the JSON response
     $response = [
       'id' => $row['test_id'],
       'type' => $row['type'],
@@ -281,5 +311,71 @@ class ReminderQCController
 
     return $response;
   }
+
+  public function inputTestResult($formData, $id)
+  {
+    unset($formData['id']);
+    $jsonData = json_encode($formData);
+
+    $query = "UPDATE tests SET detail = ?, status = 1 WHERE id = ?";
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param('si', $jsonData, $id);
+
+    if ($stmt->execute()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public function inputTestSample($formData, $id)
+  {
+    // unset($formData['id']);
+    // unset($formData['signature_data']);
+    $base64Data = $formData['signature_data'];
+
+    $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Data));
+    $filename = 'signature_' . time() . '.png';
+
+    $formData['filename'] = $filename;
+    file_put_contents(__DIR__ . '/signatures/' . $filename, $imageData);
+
+    $jsonData = json_encode($formData);
+    $query = "UPDATE tests SET handover = ?, sample_received = 1 WHERE id = ?";
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param('si', $jsonData, $id);
+
+    if ($stmt->execute()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public function getProductsThatHaveBatch()
+  {
+    $query = "
+      SELECT DISTINCT p.*
+      FROM products p
+      INNER JOIN batches b ON p.id = b.product_id;";
+
+    $result = $this->db->query($query);
+
+    $items = array();
+    while ($row = $result->fetch_assoc()) {
+      $items[] = $row;
+    }
+
+    return $items;
+  }
+
+  function format($data)
+  {
+    $result = [];
+    foreach ($data as $innerArray) {
+      $result[] = implode(';', $innerArray);
+    }
+    $output = implode('', $result);
+    return $output;
+  }
 }
-//CONCAT('', tests.type, ' ', products.name, ' ', tests.batch_id, ' (Bulan ke-', tests.month, ')')

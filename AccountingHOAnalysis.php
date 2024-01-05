@@ -63,7 +63,7 @@ if (empty($_SESSION["access_token"])) {
         <div class="col-lg-12">
           <div class="card card-custom gutter-b example example-compact">
             <div class="card-header">
-              <h3 class="card-title">Departement Head Approval</h3>
+              <h3 class="card-title">Accounting HO Analysis</h3>
             </div>
             <!--begin::Form-->
             <form id="form" class="form">
@@ -133,7 +133,6 @@ if (empty($_SESSION["access_token"])) {
                           <?php
                           $gridDetailsArray = (array)$variables->cases->gridDetails;
                           if (isset($gridDetailsArray["1"])) {
-
                             foreach ($variables->cases->gridDetails as $id => $item) : ?>
                               <tr>
                                 <td><?php echo $item->rqd_line_list_label ?></td>
@@ -162,27 +161,36 @@ if (empty($_SESSION["access_token"])) {
                 </div>
                 <div class="form-group row ">
                   <div class="col-lg-12">
-                    <label>Do you approve this?</label>
-                    <div class="radio-inline">
-                      <label class="radio">
-                        <input type="radio" name="approvalDeptHead" value="1" />
-                        <span></span>Yes</label>
-                      <label class="radio">
-                        <input type="radio" name="approvalDeptHead" value="0" />
-                        <span></span>No, please revise</label>
-                      <label class="radio">
-                        <input type="radio" name="approvalDeptHead" value="2" />
-                        <span></span>Reject</label>
-                    </div>
+                    <label>Department Head's Comment:</label>
+                    <p><strong><?= $variables->cases->depthead_notes ?></strong></p>
+                  </div>
+                </div>
+                <div class="form-group row ">
+                  <div class="col-lg-12">
+                    <label>Accounting Plant's Analysis:</label>
+                    <p><strong><?= $variables->cases->acct_notes ?></strong></p>
+                  </div>
+                </div>
+                <div class="form-group row ">
+                  <div class="col-lg-12">
+                    <label>Director Production's Comment:</label>
+                    <p><strong><?= $variables->cases->dirprod_notes ?></strong></p>
+                  </div>
+                </div>
+                <div class="form-group row ">
+                  <div class="col-lg-12">
+                    <label>HR & GA Manager's Comment:</label>
+                    <p><strong><?= $variables->cases->HRGAComment ?></strong></p>
                   </div>
                 </div>
                 <div class="form-group row ">
                   <div class="col-lg-12">
                     <label>Your Comment:</label>
-                    <textarea class="form-control" id="depthead_notes"></textarea>
+                    <textarea class="form-control" id="acc2comment"></textarea>
                   </div>
                 </div>
               </div>
+
               <div class="card-footer">
                 <div class="row">
                   <div class="col-lg-4"></div>
@@ -206,17 +214,11 @@ if (empty($_SESSION["access_token"])) {
   $(document).ready(function() {
     $('#form').submit(function(event) {
       event.preventDefault();
-
-      var isApprovedValue = $('input[name="approvalDeptHead"]:checked').val();
-      var selectedLabel = $('input[name="approvalDeptHead"]:checked').closest('label').text().trim();
-
       var oVars = {
-        "approvalDeptHead": isApprovedValue,
-        "approvalDeptHead_label": selectedLabel,
-        'depthead_notes': $('#depthead_notes').val(),
-        'depthead_notes_label': $('#depthead_notes').val(),
+        'acc2comment': $('#acc2comment').val(),
+        'acc2comment_label': $('#acc2comment').val(),
       };
-      pmRestRequest("PUT", "/api/1.0/workflow/cases/<?= $app_uid ?>/variable?del_index=2", false, oVars);
+      pmRestRequest("PUT", "/api/1.0/workflow/cases/<?= $app_uid ?>/variable?del_index=6", false, oVars);
       if (httpStatus === 200 || httpStatus === 201 || httpStatus === 204) {
         pmRestRequest("PUT", "/api/1.0/workflow/cases/<?= $app_uid ?>/route-case", false, null);
         if (httpStatus === 200 || httpStatus === 204) {

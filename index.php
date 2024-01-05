@@ -44,14 +44,14 @@ if (empty($_SESSION["access_token"])) {
                 <div class="col-xl-3">
                     <div class="card card-custom bgi-no-repeat bgi-no-repeat bgi-size-cover gutter-b" style="height: 80px; background-image: url(assets/media/bg/bg-9.jpg)">
                         <div class="card-body d-flex flex-column">
-                            <a href="http://192.168.1.179:8000/public" class="text-dark-75 text-hover-primary font-weight-bolder font-size-h3">Snipe-IT</a>
+                            <a href="http://192.168.1.179:8000/public" class="text-dark-75 text-hover-primary font-weight-bolder font-size-h3">Inventory mgmt</a>
                         </div>
                     </div>
                 </div>
                 <div class="col-xl-3">
                     <div class="card card-custom bgi-no-repeat bgi-no-repeat bgi-size-cover gutter-b" style="height: 80px; background-image: url(assets/media/bg/bg-9.jpg)">
                         <div class="card-body d-flex flex-column">
-                            <a href="reminderqc/Calendar.php" class="text-dark-75 text-hover-primary font-weight-bolder font-size-h3">Reminder QC</a>
+                            <a href="reminderqc/Calendar.php" class="text-dark-75 text-hover-primary font-weight-bolder font-size-h3">Sistem stabilita</a>
                         </div>
                     </div>
                 </div>

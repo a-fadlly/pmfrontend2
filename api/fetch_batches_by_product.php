@@ -2,11 +2,13 @@
 require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
+$id = $_GET['id'];
+
 $reminderQCController = new ReminderQCController($db);
 
-$events = $reminderQCController->getCalendarEvents();
+$batches = $reminderQCController->getBatchesByProduct($id);
 
 header('Content-Type: application/json');
-echo json_encode($events);
+echo json_encode($batches);
 
 $db->close();

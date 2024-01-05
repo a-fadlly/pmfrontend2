@@ -63,7 +63,7 @@ if (empty($_SESSION["access_token"])) {
         <div class="col-lg-12">
           <div class="card card-custom gutter-b example example-compact">
             <div class="card-header">
-              <h3 class="card-title">Departement Head Approval</h3>
+              <h3 class="card-title">Accounting Review</h3>
             </div>
             <!--begin::Form-->
             <form id="form" class="form">
@@ -162,16 +162,22 @@ if (empty($_SESSION["access_token"])) {
                 </div>
                 <div class="form-group row ">
                   <div class="col-lg-12">
+                    <label>Department Head's Comment:</label>
+                    <p><strong><?= $variables->cases->depthead_notes ?></strong></p>
+                  </div>
+                </div>
+                <div class="form-group row ">
+                  <div class="col-lg-12">
                     <label>Do you approve this?</label>
                     <div class="radio-inline">
                       <label class="radio">
-                        <input type="radio" name="approvalDeptHead" value="1" />
+                        <input type="radio" name="approvalAcc" value="1" />
                         <span></span>Yes</label>
                       <label class="radio">
-                        <input type="radio" name="approvalDeptHead" value="0" />
+                        <input type="radio" name="approvalAcc" value="0" />
                         <span></span>No, please revise</label>
                       <label class="radio">
-                        <input type="radio" name="approvalDeptHead" value="2" />
+                        <input type="radio" name="approvalAcc" value="2" />
                         <span></span>Reject</label>
                     </div>
                   </div>
@@ -179,7 +185,7 @@ if (empty($_SESSION["access_token"])) {
                 <div class="form-group row ">
                   <div class="col-lg-12">
                     <label>Your Comment:</label>
-                    <textarea class="form-control" id="depthead_notes"></textarea>
+                    <textarea class="form-control" id="acct_notes"></textarea>
                   </div>
                 </div>
               </div>
@@ -207,16 +213,16 @@ if (empty($_SESSION["access_token"])) {
     $('#form').submit(function(event) {
       event.preventDefault();
 
-      var isApprovedValue = $('input[name="approvalDeptHead"]:checked').val();
-      var selectedLabel = $('input[name="approvalDeptHead"]:checked').closest('label').text().trim();
+      var isApprovedValue = $('input[name="approvalAcc"]:checked').val();
+      var selectedLabel = $('input[name="approvalAcc"]:checked').closest('label').text().trim();
 
       var oVars = {
-        "approvalDeptHead": isApprovedValue,
-        "approvalDeptHead_label": selectedLabel,
-        'depthead_notes': $('#depthead_notes').val(),
-        'depthead_notes_label': $('#depthead_notes').val(),
+        "approvalAcc": isApprovedValue,
+        "approvalAcc_label": selectedLabel,
+        'acct_notes': $('#acct_notes').val(),
+        'acct_notes_label': $('#acct_notes').val(),
       };
-      pmRestRequest("PUT", "/api/1.0/workflow/cases/<?= $app_uid ?>/variable?del_index=2", false, oVars);
+      pmRestRequest("PUT", "/api/1.0/workflow/cases/<?= $app_uid ?>/variable?del_index=3", false, oVars);
       if (httpStatus === 200 || httpStatus === 201 || httpStatus === 204) {
         pmRestRequest("PUT", "/api/1.0/workflow/cases/<?= $app_uid ?>/route-case", false, null);
         if (httpStatus === 200 || httpStatus === 204) {

@@ -2,13 +2,14 @@
 require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
-if (empty($_GET["id"])) {
-  header("Location: Products.php");
+if (!isset($_GET["id"])) {
+  header("Location: Calendar.php");
 }
 
 $reminderQCController = new ReminderQCController($db);
+$test = $reminderQCController->getTest($_GET['id']);
 
-$batches = $reminderQCController->getBatchesByProduct($_GET['id']);
+
 ?>
 <?php include 'header.php' ?>
 <div class="flex-row-fluid ml-lg-8 d-block" id="kt_inbox_list">
@@ -18,40 +19,38 @@ $batches = $reminderQCController->getBatchesByProduct($_GET['id']);
       <div class="tab-pane fade show active" id="kt_tab_pane_1_4" role="tabpanel" aria-labelledby="kt_tab_pane_1_4">
         <div class="card-header flex-wrap border-0 pt-6 pb-0">
           <div class="card-title">
-            <h3 class="card-label">Batches by Product
+            <h3 class="card-label">Input Test Result
               <span class="d-block text-muted pt-2 font-size-sm">A case is placed in the user's inbox when the current task in the case has been assigned to their account</span>
             </h3>
           </div>
         </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-head-custom table-vertical-center" id="inbox-table">
-              <thead>
-                <tr>
-                  <th>Batch Number</th>
-                  <th>Mfg Date</th>
-                  <th>Exp Date</th>
-                  <th>Sample Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                foreach ($batches as $batch) {
-                ?>
-                  <tr>
-                    <td><a href="TestsByBatch.php?id=<?= $batch["id"] ?>"><?= $batch["batch_number"] ?></a></td>
-                    <td><?= $batch["mfg_date"] ?></td>
-                    <td><?= $batch["exp_date"] ?></td>
-                    <td><?= $batch["sample_date"] ?></td>
-                  </tr>
-                <?php
-                }
-                ?>
-              </tbody>
-            </table>
-            <!--end: Datatable-->
+        <form class="form" method="POST" action="../api/post_test_result.php">
+          <input type="hidden" id="id" name="id" value="<?= $_GET['id'] ?>">
+          <div class="card-body">
+            <?php $detail = json_decode($test["detail"], true); ?>
+            <?php
+            foreach (json_decode($test["variables"]) as $key => $item) {
+              $input_name = preg_replace('/[^A-Za-z0-9_]/', '_', $item[0]);
+            ?>
+              <div class="form-group">
+                <div class="col-lg-12">
+                  <label><?= $item[0] ?></label>
+                  <input id="<?= $input_name ?>_<?= $key ?>[]" name="<?= $input_name ?>_<?= $key ?>[]" placeholder="<?= isset($item[1]) ? $item[1] : '' ?>" type="text" class="form-control" />
+                  <input type="hidden" id="<?= $input_name ?>_<?= $key ?>[]" name="<?= $input_name ?>_<?= $key ?>[]" value="<?= isset($item[1]) ? $item[1] : '' ?>">
+
+                </div>
+              </div>
+            <?php } ?>
           </div>
-        </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-lg-12">
+                <button type="submit" class="btn btn-primary mr-2">Save</button>
+                <button type="reset" class="btn btn-secondary">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -122,13 +121,7 @@ $batches = $reminderQCController->getBatchesByProduct($_GET['id']);
   <!--end::Content-->
 </div>
 <!-- end::User Panel-->
-<script>
-  $(document).ready(function() {
-    var inboxTable = $('#inbox-table').DataTable({
-      "order": [0, 'desc']
-    });
-  });
-</script>
+
 </body>
 
 </html>

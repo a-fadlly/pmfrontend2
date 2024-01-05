@@ -2,14 +2,20 @@
 require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
+if (empty($_GET["id"])) {
+    header("Location: Products.php");
+}
+
+$reminderQCController = new ReminderQCController($db);
+$product = $reminderQCController->getProduct($_GET['id']);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = $_POST['id'];
     $number = $_POST['number'];
     $name = $_POST['name'];
     $variables = $_POST['variables'];
 
-    $reminderQCController = new ReminderQCController($db);
-
-    if ($reminderQCController->createProduct($number, $name, $variables)) {
+    if ($reminderQCController->editProduct($id, $number, $name, $variables)) {
         header('Location: Products.php');
         exit();
     } else {
@@ -25,28 +31,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="tab-pane fade show active" id="kt_tab_pane_1_4" role="tabpanel" aria-labelledby="kt_tab_pane_1_4">
                 <div class="card-header flex-wrap border-0 pt-6 pb-0">
                     <div class="card-title">
-                        <h3 class="card-label">Create Product
+                        <h3 class="card-label">Edit Product
                             <span class="d-block text-muted pt-2 font-size-sm">A case is placed in the user's inbox when the current task in the case has been assigned to their account</span>
                         </h3>
                     </div>
                 </div>
-                <form class="form" method="post" action="CreateProduct.php">
+                <form class="form" method="post" action="EditProduct.php">
                     <div class="card-body">
                         <div class="form-group row ">
+                            <input type="hidden" id="id" name="id" value="<?= $_GET['id'] ?>" />
                             <div class="col-lg-6">
                                 <label>Item Number:</label>
-                                <input id="number" name="number" type="text" class="form-control" />
+                                <input id="number" name="number" type="text" class="form-control" value="<?= $product["number"] ?>" />
                             </div>
                             <div class="col-lg-6">
                                 <label>Product Name:</label>
-                                <input id="name" name="name" type="text" class="form-control" />
+                                <input id="name" name="name" type="text" class="form-control" value="<?= $product["name"] ?>" />
                             </div>
                         </div>
                         <div class="form-group row ">
                             <div class="col-lg-12">
                                 <label>Variables:</label>
                                 <div class="input-group">
-                                    <textarea class="form-control" id="variables" name="variables" id="variables" cols="30" rows="10">Pemerian&#13;&#10;Berat&#13;&#10;Kekerasan&#13;&#10;Ketebalan&#13;&#10;Waktu Hancur&#13;&#10;Kadar&#13;&#10;Disolusi</textarea>
+                                    <textarea class="form-control" id="variables" name="variables" id="variables" cols="30" rows="10"><?= $reminderQCController->format(json_decode($product["variables"])) ?></textarea>
                                 </div>
                             </div>
                         </div>

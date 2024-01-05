@@ -2,11 +2,13 @@
 require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
+$id = $_POST['id'];
+
 $reminderQCController = new ReminderQCController($db);
 
-$events = $reminderQCController->getCalendarEvents();
+$status = $reminderQCController->inputTestResult($_POST, $id);
 
 header('Content-Type: application/json');
-echo json_encode($events);
+echo $status;
 
 $db->close();

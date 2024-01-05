@@ -39,7 +39,6 @@
       border: 1px solid #ccc;
       margin-top: 5px;
     }
-
     .result:hover {
       background-color: #f0f0f0;
     }
@@ -51,7 +50,6 @@
   <script src="assets/js/scripts.bundlef552.js?v=7.1.8"></script>
   <script src="assets/plugins/custom/datatables/datatables.bundlef552.js?v=7.1.8"></script>
   <script src="assets/js/pages/crud/forms/validation/form-widgetsf552.js?v=7.1.8"></script>
-
   <script>
     (function(h, o, t, j, a, r) {
       h.hj = h.hj || function() {

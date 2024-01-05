@@ -148,11 +148,20 @@ function active($currect_page)
     }
 }
 
-function filterCases($cases, $app_status)
+function filterArray($inputArray, $conditions)
 {
-    $inbox = array_filter($cases, function ($case) use ($app_status) {
-        return $case->app_status === $app_status;
-    });
-    $inbox = array_values($inbox);
-    return $inbox;
+    $filteredArray = [];
+    foreach ($inputArray as $item) {
+        $match = true;
+        foreach ($conditions as $key => $value) {
+            if (property_exists($item, $key) && $item->$key != $value) {
+                $match = false;
+                break;
+            }
+        }
+        if ($match) {
+            $filteredArray[] = $item;
+        }
+    }
+    return $filteredArray;
 }
