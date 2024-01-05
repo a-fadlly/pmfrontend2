@@ -40,9 +40,26 @@ class ReminderQCController
 
   public function editProduct($id, $number, $name, $variables)
   {
+    $lines = explode("\n", $variables);
+    $resultArray = [];
+    foreach ($lines as $line) {
+      $values = explode(";", $line);
+      $resultArray[] = $values;
+    }
+
+    $dataArray = [];
+    foreach ($lines as $line) {
+      $line = trim($line);
+      if (!empty($line)) {
+        $dataArray[] = $line;
+      }
+    }
+
+    $jsonArray = json_encode($resultArray);
+
     $query = "UPDATE products SET number = ?, name = ?, variables = ? WHERE id = ?";
     $stmt = $this->db->prepare($query);
-    $stmt->bind_param('sssi', $number, $name, $variables, $id);
+    $stmt->bind_param('sssi', $number, $name, $jsonArray, $id);
 
     if ($stmt->execute()) {
       return true;
@@ -280,6 +297,10 @@ class ReminderQCController
         t.month,
         t.detail,
         b.batch_number,
+        b.mfg_date,
+        b.exp_date,
+        b.sample_date,
+        b.storage_conditions,
         p.name AS product_name,
         p.number AS product_number,
         p.variables
@@ -304,6 +325,10 @@ class ReminderQCController
       'month' => $row['month'],
       'detail' => $row['detail'],
       'batch_number' => $row['batch_number'],
+      'mfg_date' => $row['mfg_date'],
+      'exp_date' => $row['exp_date'],
+      'sample_date' => $row['sample_date'],
+      'storage_conditions' => $row['storage_conditions'],
       'product_name' => $row['product_name'],
       'product_number' => $row['product_number'],
       'variables' => $row['variables'],

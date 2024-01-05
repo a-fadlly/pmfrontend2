@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="col-lg-12">
                                 <label>Variables:</label>
                                 <div class="input-group">
-                                    <textarea class="form-control" id="variables" name="variables" id="variables" cols="30" rows="10">Pemerian&#13;&#10;Berat&#13;&#10;Kekerasan&#13;&#10;Ketebalan&#13;&#10;Waktu Hancur&#13;&#10;Kadar&#13;&#10;Disolusi</textarea>
+                                    <textarea class="form-control" id="variables" name="variables" id="variables" cols="30" rows="10">Pemerian&#13;&#10;Berat&#13;&#10;Kekerasan&#13;&#10;Ketebalan&#13;&#10;Waktu hancur&#13;&#10;Kadar&#13;&#10;Disolusi</textarea>
                                 </div>
                             </div>
                         </div>
