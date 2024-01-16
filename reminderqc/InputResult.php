@@ -1,14 +1,13 @@
 <?php
-include '../controller/common.php';
 require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
 if (!isset($_GET["id"])) {
-  header("Location: Calendar.php");
+  //header("Location: Calendar.php");
 }
 
 $reminderQCController = new ReminderQCController($db);
-$test = $reminderQCController->getTest($_GET['id']);
+$test = $reminderQCController->getTest2($_GET['id']);
 
 // var_dump($test);
 ?>
@@ -25,98 +24,93 @@ $test = $reminderQCController->getTest($_GET['id']);
             </h3>
           </div>
         </div>
-        <form class="form" method="POST" action="../api/post_test_result.php">
-          <input type="hidden" id="id" name="id" value="<?= $_GET['id'] ?>">
-          <div class="card-body">
-            <h3 class="font-size-lg text-dark font-weight-bold mb-6">1. Info:</h3>
-            <div class="form-group">
-              <div class="col-lg-12">
-                <label>
-                  Nomor Produk <i>(Product Number)</i>
-                </label>
-                <p><strong><?= $test["product_number"] ?></strong></p>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-lg-12">
-                <label>
-                  Nama Produk <i>(Product name)</i>
-                </label>
-                <p><strong><?= $test["product_name"] ?></strong></p>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-lg-12">
-                <label>
-                  Nomor Batch <i>(Batch Number)</i>
-                </label>
-                <p><strong><?= $test["batch_number"] ?></strong></p>
-              </div>
-            </div>
-            <div class="form-group mb-3">
-              <div class="col-lg-12">
-                <label>
-                  Kondisi Penyimpanan <i>(Storage conditions)</i>
-                </label>
-                <?php
-                $storageConditions = json_decode($test["storage_conditions"], true);
-                $typeValue = $storageConditions[$test["type"]] ?? null;
-                ?>
-                <p><strong><?= $typeValue ?></strong></p>
-              </div>
-            </div>
-            <div class="form-group mb-3">
-              <div class="col-lg-12">
-                <label>
-                  Tipe <i>(Type)</i>
-                </label>
-                <p><strong><?= $test["type"] ?></strong></p>
-              </div>
-            </div>
-            <div class="form-group row p-4">
-              <div class="col-lg-3">
-                <label>
-                  Mfg Date
-                </label>
-                <p><strong><?= $test["mfg_date"] ?></strong></p>
-              </div>
-              <div class="col-lg-3">
-                <label>
-                  Exp Date
-                </label>
-                <p><strong><?= $test["exp_date"] ?></strong></p>
-              </div>
-              <div class="col-lg-3">
-                <label>
-                  Sample Date
-                </label>
-                <p><strong><?= $test["sample_date"] ?></strong></p>
-              </div>
-            </div>
-            <h3 class="font-size-lg text-dark font-weight-bold mb-6">2. Input Result:</h3>
-            <?php $detail = json_decode($test["detail"], true); ?>
-            <?php
-            foreach (json_decode($test["variables"]) as $key => $item) {
-              $input_name = preg_replace('/[^A-Za-z0-9_]/', '_', $item[0]);
-            ?>
-              <div class="form-group">
-                <div class="col-lg-12">
-                  <label><?= rtrim($item[0]) ?>:</label>
-                  <input id="<?= $input_name ?>_<?= $key ?>[]" name="<?= $input_name ?>_<?= $key ?>[]" placeholder="<?= isset($item[1]) ? $item[1] : '' ?>" type="text" class="form-control" />
-                  <input type="hidden" id="<?= $input_name ?>_<?= $key ?>[]" name="<?= $input_name ?>_<?= $key ?>[]" value="<?= isset($item[1]) ? $item[1] : '' ?>">
-                </div>
-              </div>
-            <?php } ?>
-          </div>
-          <div class="card-footer">
-            <div class="row">
-              <div class="col-lg-12">
-                <button type="submit" class="btn btn-primary mr-2">Save</button>
-                <button type="reset" class="btn btn-secondary">Cancel</button>
-              </div>
+        <input type="hidden" id="id" name="id" value="<?= $_GET['id'] ?>">
+        <div class="card-body">
+          <h3 class="font-size-lg text-dark font-weight-bold mb-6">1. Info:</h3>
+          <div class="form-group">
+            <div class="col-lg-12">
+              <label>
+                Nomor Produk <i>(Product Number)</i>
+              </label>
+              <p><strong><?= $test["product_number"] ?></strong></p>
             </div>
           </div>
-        </form>
+          <div class="form-group">
+            <div class="col-lg-12">
+              <label>
+                Nama Produk <i>(Product name)</i>
+              </label>
+              <p><strong><?= $test["product_name"] ?></strong></p>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-12">
+              <label>
+                Nomor Batch <i>(Batch Number)</i>
+              </label>
+              <p><strong><?= $test["batch_number"] ?></strong></p>
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <div class="col-lg-12">
+              <label>
+                Tipe <i>(Type)</i>
+              </label>
+              <p><strong><?= $test["type"] ?></strong></p>
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <div class="col-lg-12">
+              <label>
+                Kondisi Penyimpanan <i>(Storage conditions)</i>
+              </label>
+              <?php
+              $storage = json_decode($test["storage_conditions"], true);
+              $typeValue = $storage[$test["type"]] ?? null;
+              ?>
+              <p><strong><?= $typeValue ?></strong></p>
+            </div>
+          </div>
+          <div class="form-group row p-4">
+            <div class="col-lg-3">
+              <label>
+                Mfg Date
+              </label>
+              <p><strong><?= $test["mfg_date"] ?></strong></p>
+            </div>
+            <div class="col-lg-3">
+              <label>
+                Exp Date
+              </label>
+              <p><strong><?= $test["exp_date"] ?></strong></p>
+            </div>
+            <div class="col-lg-3">
+              <label>
+                Sample Date
+              </label>
+              <p><strong><?= $test["sample_date"] ?></strong></p>
+            </div>
+          </div>
+          <h3 class="font-size-lg text-dark font-weight-bold mb-6">2. Input Result:</h3>
+          <?php
+          foreach ($test["variables"] as $key => $item) {
+          ?>
+            <div class="form-group form-loop" data-index="<?= $key ?>">
+              <div class="col-lg-12">
+                <label><?= rtrim($item["variable"]) ?>:</label>
+                <input id="result" name="result" class="form-control input-value" data-id="<?= $item["id"] ?>" data-variable="<?= $item["variable"] ?>" data-specification="<?= $item["specification"] ?>" />
+              </div>
+            </div>
+          <?php } ?>
+        </div>
+        <div class="card-footer">
+          <div class="row">
+            <div class="col-lg-12">
+              <button id="submitBtn" type="submit" class="btn btn-primary mr-2">Save</button>
+              <button type="reset" class="btn btn-secondary">Cancel</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -187,6 +181,47 @@ $test = $reminderQCController->getTest($_GET['id']);
   <!--end::Content-->
 </div>
 <!-- end::User Panel-->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $("#submitBtn").on("click", function() {
+      var jsonData = [];
+      var id = $("#id").val();
+
+      $(".form-loop").each(function() {
+        var index = $(this).data("index");
+        var variable_id = $(this).find("input").data("id");
+        var variable = $(this).find("input").data("variable");
+        var specification = $(this).find("input").data("specification");
+        var result = $(this).find(".input-value").val();
+
+        var data = {
+          id: variable_id,
+          variable: variable,
+          specification: specification,
+          result: result
+        };
+
+        jsonData.push(data);
+      });
+
+      $.ajax({
+        type: "POST",
+        url: "../api/post_test_result2.php",
+        data: {
+          id: id,
+          jsonData: JSON.stringify(jsonData)
+        },
+        success: function(response) {
+          console.log(response);
+        },
+        error: function(error) {
+          console.error(error);
+        }
+      });
+    });
+  });
+</script>
 
 </body>
 

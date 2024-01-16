@@ -4,6 +4,68 @@ session_start();
 $pmServer    = 'http://192.168.1.244:8000';
 $pmWorkspace = 'workflow';
 
+function pmRestRequest($method, $endpoint, $aVars = null, $accessToken = null)
+{
+    global $pmServer;
+
+    if (empty($accessToken) and isset($_COOKIE['access_token']))
+        $accessToken = $_COOKIE['access_token'];
+
+    if (empty($accessToken)) { //if the access token has expired
+        //To check if the PM login session has expired: !isset($_COOKIE['PHPSESSID'])
+        header("Location: loginForm.php"); //change to match your login method
+        die();
+    }
+
+    //add beginning / to endpoint if it doesn't exist:
+    if (!empty($endpoint) and $endpoint[0] != "/")
+        $endpoint = "/" . $endpoint;
+
+    $ch = curl_init($pmServer . $endpoint);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $accessToken));
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $method = strtoupper($method);
+
+    switch ($method) {
+        case "GET":
+            break;
+        case "DELETE":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+            break;
+        case "PUT":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            break;
+        case "POST":
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($aVars));
+            break;
+        default:
+            throw new Exception("Error: Invalid HTTP method '$method' $endpoint");
+            return null;
+    }
+
+    $oRet = new StdClass;
+    $oRet->response = json_decode(curl_exec($ch));
+    $oRet->status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($oRet->status == 401) { //if session has expired or bad login:
+        header("Location: loginForm.php"); //change to match your login method
+        die();
+    } elseif ($oRet->status != 200 and $oRet->status != 201) { //if error
+        if ($oRet->response and isset($oRet->response->error)) {
+            print "Error in $pmServer:\nCode: {$oRet->response->error->code}\n" .
+                "Message: {$oRet->response->error->message}\n";
+        } else {
+            print "Error: HTTP status code: $oRet->status\n";
+        }
+    }
+
+    return $oRet;
+}
+
+
 //for get case info
 function getCaseInfo($url)
 {

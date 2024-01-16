@@ -1,9 +1,11 @@
+<?php include '../controller/common.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   <title>Basic AF</title>
   <meta name="description" content="Basic datatables examples" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -24,6 +26,16 @@
 
     .result:hover {
       background-color: #f0f0f0;
+    }
+
+    .question {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .drag-handle {
+      cursor: move;
     }
   </style>
   <script src="https://kit.fontawesome.com/5d09fddc6f.js" crossorigin="anonymous"></script>

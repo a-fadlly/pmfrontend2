@@ -12,7 +12,6 @@ if (empty($_SESSION["access_token"])) {
   $paused = json_decode(getCaseInfo('cases/paused'));
 }
 ?>
-
 <?php include 'common/header.php' ?>
 <!--begin::Content-->
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">

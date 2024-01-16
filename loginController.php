@@ -83,7 +83,6 @@ if (isset($_REQUEST['username']) and isset($_REQUEST['password'])) {
 
             //If saving to a file:
             //file_put_contents("/secure/location/oauthAccess.json", json_encode($tokenData));
-
             header("Location: index.php");
         }
     }

@@ -228,6 +228,12 @@ if (empty($_SESSION["access_token"])) {
                 </div>
                 <div class="form-group row ">
                   <div class="col-lg-12">
+                    <label>Supporting documents:</label>
+                    <input type="file" name="attchment[]" id="attchment" multiple="multiple" size="40" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group row ">
+                  <div class="col-lg-12">
                     <label>Purchase Request Analysis:</label>
                     <textarea class="form-control" id="catatan_analisa"></textarea>
                   </div>
@@ -370,7 +376,7 @@ if (empty($_SESSION["access_token"])) {
       var comment_line_list = $('#comment_line_list').val();
 
       if (typeof rqd_part_list === "string" && rqd_part_list.length === 0) {
-        
+
       } else {
         gridDetailsTable.row.add([
             line++,
@@ -457,74 +463,78 @@ if (empty($_SESSION["access_token"])) {
         gridDetails[value[0]] = rowObject;
       });
 
-      var oVars = {
-        'pro_uid': '541076660657abcb7a26827010180338',
-        'tas_uid': '748046875657abcb8542ad2026098740',
-        'usr_uid': $('#usr_uid').val(),
-        'variables': [{
-          "namaPengaju": $('#usr_firstname').val() + ' ' + $('#usr_lastname').val(),
-          "namaPengaju_label": $('#usr_firstname').val() + ' ' + $('#usr_lastname').val(),
+      var formData = new FormData(this);
+      formData.append('inp_doc_uid', '1980285646582494f2b7e82078653904');
+      formData.append('tas_uid', '748046875657abcb8542ad2026098740');
+      formData.append('app_doc_comment', 'comment');
+      formData.append('variable_name', 'attchment');
+      formData.append('pro_uid', '541076660657abcb7a26827010180338');
+      formData.append('dynaform_uid', '869628906657abcb9443954046901516');
+      formData.append('usr_uid', $('#usr_uid').val());
+      formData.append('form', $('#attchment').get(0).files);
+      formData.append('variables', JSON.stringify([{
 
-          "tglsubmit": getCurrentDateTime(),
+        "namaPengaju": $('#usr_firstname').val() + ' ' + $('#usr_lastname').val(),
+        "namaPengaju_label": $('#usr_firstname').val() + ' ' + $('#usr_lastname').val(),
 
-          'rqm_nbr': $('#rqm_nbr').val(),
-          'rqm_nbr_label': $('#rqm_nbr').val(),
+        "tglsubmit": getCurrentDateTime(),
 
-          'rqm_ship': $('#rqm_ship').val(),
-          'rqm_ship_label': $('#rqm_ship').val(),
+        'rqm_nbr': $('#rqm_nbr').val(),
+        'rqm_nbr_label': $('#rqm_nbr').val(),
 
-          'rqm_entity': $('#rqm_entity').val(),
-          'rqm_entity_label': $('#rqm_entity').val(),
+        'rqm_ship': $('#rqm_ship').val(),
+        'rqm_ship_label': $('#rqm_ship').val(),
 
-          'rqm_req_date': $('#rqm_req_date').val(),
-          'rqm_req_date_label': $('#rqm_req_date').val(),
+        'rqm_entity': $('#rqm_entity').val(),
+        'rqm_entity_label': $('#rqm_entity').val(),
 
-          'rqm_need_date': $('#rqm_need_date').val(),
-          'rqm_need_date_label': $('#rqm_need_date').val(),
+        'rqm_req_date': $('#rqm_req_date').val(),
+        'rqm_req_date_label': $('#rqm_req_date').val(),
 
-          'rqm_due_date': $('#rqm_due_date').val(),
-          'rqm_due_date_label': $('#rqm_due_date').val(),
+        'rqm_need_date': $('#rqm_need_date').val(),
+        'rqm_need_date_label': $('#rqm_need_date').val(),
 
-          'rqm_rmks': $('#rqm_rmks').val(),
-          'rqm_rmks_label': $('#rqm_rmks').val(),
+        'rqm_due_date': $('#rqm_due_date').val(),
+        'rqm_due_date_label': $('#rqm_due_date').val(),
 
-          'rqm_rqby_userid': $('#usr_position').val() ?? "mfg",
-          'rqm_rqby_userid_label': $('#usr_position').val() ?? "mfg",
+        'rqm_rmks': $('#rqm_rmks').val(),
+        'rqm_rmks_label': $('#rqm_rmks').val(),
 
-          'rqm_domain': $('#rqm_ship').val(),
-          'rqm_domain_label': $('#rqm_ship').val(),
+        'rqm_rqby_userid': $('#usr_position').val() ?? "mfg",
+        'rqm_rqby_userid_label': $('#usr_position').val() ?? "mfg",
 
-          'rqm_end_userid': $('#usr_position').val() ?? "mfg",
-          'rqm_end_userid_label': $('#usr_position').val() ?? "mfg",
+        'rqm_domain': $('#rqm_ship').val(),
+        'rqm_domain_label': $('#rqm_ship').val(),
 
-          'rqm_reason': $('#rqm_reason').val(),
-          'rqm_reason_label': $('#rqm_reason').val(),
+        'rqm_end_userid': $('#usr_position').val() ?? "mfg",
+        'rqm_end_userid_label': $('#usr_position').val() ?? "mfg",
 
-          'rqm_cc': $('#rqm_cc').val(),
-          'rqm_cc_label': $('#rqm_cc').val(),
+        'rqm_reason': $('#rqm_reason').val(),
+        'rqm_reason_label': $('#rqm_reason').val(),
 
-          "comment_header": $('#comment_header').val(),
-          "comment_header_label": $('#comment_header').val(),
+        'rqm_cc': $('#rqm_cc').val(),
+        'rqm_cc_label': $('#rqm_cc').val(),
 
-          "gridDetails": gridDetails,
+        "comment_header": $('#comment_header').val(),
+        "comment_header_label": $('#comment_header').val(),
 
-          "catatan_analisa": $('#catatan_analisa').val(),
-          "catatan_analisa_label": $('#catatan_analisa').val(),
-        }],
-      };
+        "gridDetails": gridDetails,
 
-      pmRestRequest("POST", "/api/1.0/workflow/cases/impersonate", false, oVars);
-      if (httpStatus === 200 && oResponse) {
+        "catatan_analisa": $('#catatan_analisa').val(),
+        "catatan_analisa_label": $('#catatan_analisa').val(),
+      }]));
 
-        pmRestRequest("PUT", "/api/1.0/workflow/cases/" + oResponse['app_uid'] + "/route-case", false, null);
-        if (httpStatus === 200) {
-          window.location.href = "index.php";
-        } else {
-          alert("Error");
-        }
-      } else {
-        alert("Error");
-      }
+      $.ajax({
+        type: "POST",
+        url: "api/api_CreateCase.php",
+        data: formData,
+        success: function(result) {
+          console.log(result);
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+      });
     });
   });
 </script>

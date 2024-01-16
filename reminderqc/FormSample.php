@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="mx-auto">
                 <canvas id="signature" class="border border-gray-400"></canvas>
               </div>
+              <button class="btn btn-sm btn-danger py-0" type="button" onclick="clearSignature()">Clear</button>
             </div>
           </div>
         </div>

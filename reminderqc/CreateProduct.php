@@ -1,22 +1,3 @@
-<?php
-require_once('../config/db_connect.php');
-require_once('../controller/reminderqc.php');
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $number = $_POST['number'];
-    $name = $_POST['name'];
-    $variables = $_POST['variables'];
-
-    $reminderQCController = new ReminderQCController($db);
-
-    if ($reminderQCController->createProduct($number, $name, $variables)) {
-        header('Location: Products.php');
-        exit();
-    } else {
-        echo "Error adding item.";
-    }
-}
-?>
 <?php include 'header.php' ?>
 <div class="flex-row-fluid ml-lg-8 d-block" id="kt_inbox_list">
     <!--begin::Card-->
@@ -30,36 +11,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </h3>
                     </div>
                 </div>
-                <form class="form" method="post" action="CreateProduct.php">
-                    <div class="card-body">
-                        <div class="form-group row ">
-                            <div class="col-lg-6">
-                                <label>Item Number:</label>
-                                <input id="number" name="number" type="text" class="form-control" />
-                            </div>
-                            <div class="col-lg-6">
-                                <label>Product Name:</label>
-                                <input id="name" name="name" type="text" class="form-control" />
-                            </div>
+                <div class="card-body">
+                    <div class="form-group row ">
+                        <div class="col-lg-6">
+                            <label>Item Number:</label>
+                            <input id="number" name="number" type="text" class="form-control" />
                         </div>
-                        <div class="form-group row ">
-                            <div class="col-lg-12">
-                                <label>Variables:</label>
-                                <div class="input-group">
-                                    <textarea class="form-control" id="variables" name="variables" id="variables" cols="30" rows="10">Pemerian&#13;&#10;Berat&#13;&#10;Kekerasan&#13;&#10;Ketebalan&#13;&#10;Waktu hancur&#13;&#10;Kadar&#13;&#10;Disolusi</textarea>
-                                </div>
-                            </div>
+                        <div class="col-lg-6">
+                            <label>Product Name:</label>
+                            <input id="name" name="name" type="text" class="form-control" />
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <button type="submit" class="btn btn-primary mr-2">Save</button>
-                                <button type="reset" class="btn btn-secondary">Cancel</button>
-                            </div>
+                    <div id="variables-container"></div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="addvariable()">Add variable</button>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button type="submit" class="btn btn-primary mr-2" onclick="submitProduct()">Save</button>
+                            <button type="reset" class="btn btn-secondary">Cancel</button>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -130,7 +103,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!--end::Content-->
 </div>
 <!-- end::User Panel-->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#variables-container").sortable({
+            handle: ".drag-handle",
+        });
 
+        addvariable();
+
+        $("#quiz-builder-form").submit(function(event) {
+            event.preventDefault();
+            var variableOrder = $("#variables-container .variable").map(function() {
+                return $(this).data("variable-id");
+            }).get();
+        });
+    });
+
+    function addvariable() {
+        var variableId = new Date().getTime();
+
+        var variableHtml =
+            `<div class="variable form-group row" data-variable-id="${variableId}">
+                <div class="col-lg-5">
+                    <span class="drag-handle">&#x2195;</span>
+                    <label for="variable-${variableId}">Variable:</label>
+                    <input type="text" id="variable-${variableId}" name="variables[]" class="form-control">
+                </div>
+                <div class="col-lg-5">
+                    <label for="specification-${variableId}">Specification:</label>
+                    <input type="text" id="specification-${variableId}" name="specifications[]" class="form-control">
+                </div>
+                <div class="col-lg-2">
+                    <label for=""> </label>
+                    <button type="button" class="btn btn-danger form-control" onclick="removevariable(${variableId})">Remove</button>
+                </div>
+            </div>`;
+
+        $("#variables-container").append(variableHtml);
+
+        $("#variables-container").sortable("refresh");
+    }
+
+    function removevariable(variableId) {
+        $(`#variables-container .variable[data-variable-id="${variableId}"]`).remove();
+        $("#variables-container").sortable("refresh");
+    }
+
+    function submitProduct() {
+        var variableData = $("#variables-container .variable").map(function() {
+            // var variableId = $(this).data("variable-id");
+            var variableText = $(this).find('input[name="variables[]"]').val();
+            var specificationText = $(this).find('input[name="specifications[]"]').val();
+            return {
+                // variable_id: variableId,
+                variable: variableText,
+                specification: specificationText
+            };
+        }).get();
+
+        var number = $("#number").val();
+        var name = $("#name").val();
+
+        $.ajax({
+            url: "../api/post_create_product.php",
+            type: "POST",
+            data: {
+                number: number,
+                name: name,
+                variables: variableData
+            },
+            success: function(response) {
+                console.log("Ajax Success:", response);
+            },
+            error: function(error) {
+                console.log("Ajax Error:", error);
+            }
+        });
+    }
+</script>
 </body>
 
 </html>

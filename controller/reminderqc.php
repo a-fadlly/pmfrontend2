@@ -8,6 +8,33 @@ class ReminderQCController
     $this->db = $db;
   }
 
+  public function createProduct2($number, $name)
+  {
+    $query = "INSERT INTO products (number, name) VALUES (?, ?)";
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param('ss', $number, $name);
+
+    if ($stmt->execute()) {
+      return $this->db->insert_id;
+    } else {
+      return false;
+    }
+  }
+
+  public function createProductVariable($product_id, $variable, $specification)
+  {
+    $query = "INSERT INTO product_variables (product_id, variable, specification) VALUES (?, ?, ?)";
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param('iss', $product_id, $variable, $specification);
+
+    if ($stmt->execute()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
   public function createProduct($number, $name, $variables)
   {
     $lines = explode("\n", $variables);
@@ -123,7 +150,7 @@ class ReminderQCController
       batches.updated_at 
     FROM batches
     INNER JOIN products ON products.id = batches.product_id 
-    WHERE product_id = ?";
+    WHERE product_id = ? AND batches.is_active=1";
 
     $stmt = $this->db->prepare($query);
     $stmt->bind_param('i', $id);
@@ -192,7 +219,7 @@ class ReminderQCController
         date AS start,
         CASE 
           WHEN date >= CURDATE() AND tests.sample_received = 0 AND tests.status = 0 THEN 'orange'
-          WHEN date < CURDATE() AND tests.sample_received = 0 AND tests.status = 0 THEN 'red'
+          WHEN date < CURDATE() AND tests.status = 0 THEN 'red'
           WHEN date >= CURDATE() AND tests.sample_received = 1 AND tests.status = 0 THEN 'brown'
           WHEN tests.status = 1 THEN 'green'
           ELSE 'black'
@@ -239,6 +266,34 @@ class ReminderQCController
     return $result->fetch_assoc();
   }
 
+  public function getTestsByBatch2($batch_id)
+  {
+    $query = "SELECT 
+        p.number as product_number,
+        p.name as product_name,
+        b.batch_number,
+        b.mfg_date,
+        b.exp_date,
+        b.types,
+        t.id,
+        t.type,
+        t.date,
+        t.month,
+        t.detail
+    FROM products p
+    JOIN batches b ON p.id = b.product_id
+    LEFT JOIN tests t ON b.id = t.batch_id
+    WHERE b.id = ? AND t.type = 'realtime'";
+
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param('i', $batch_id);
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+  }
+
   public function getTestsByBatch($batch_id)
   {
     $query = "
@@ -282,6 +337,56 @@ class ReminderQCController
         'date' => $row['date'],
         'month' => $row['month'],
         'detail' => $row['detail'],
+      ];
+    }
+
+    return $formattedData;
+  }
+
+  public function getTest2($batch_id)
+  {
+    $query = "
+    SELECT
+        t.id,
+        p.number as product_number,
+        p.name as product_name,
+        b.batch_number,
+        b.mfg_date,
+        b.exp_date,
+        b.sample_date,
+        b.storage_conditions,
+        t.type,
+v.*
+    FROM products p
+    JOIN batches b ON p.id = b.product_id
+    JOIN product_variables v ON p.id = v.product_id
+    LEFT JOIN tests t ON b.id = t.batch_id
+    WHERE t.id = ?
+    ";
+
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param('i', $batch_id);
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $formattedData = [];
+
+    while ($row = $result->fetch_assoc()) {
+      $formattedData['id'] = $row['id'];
+      $formattedData['product_number'] = $row['product_number'];
+      $formattedData['product_name'] = $row['product_name'];
+      $formattedData['batch_number'] = $row['batch_number'];
+      $formattedData['mfg_date'] = $row['mfg_date'];
+      $formattedData['exp_date'] = $row['exp_date'];
+      $formattedData['sample_date'] = $row['sample_date'];
+      $formattedData['storage_conditions'] = $row['storage_conditions'];
+      $formattedData['type'] = $row['type'];
+      $formattedData['variables'][] = [
+        'id' => $row['id'],
+        'variable' => $row['variable'],
+        'specification' => $row['specification'],
       ];
     }
 
@@ -335,6 +440,21 @@ class ReminderQCController
     ];
 
     return $response;
+  }
+
+  public function inputTestResult2($formData, $id)
+  {
+    $jsonData = json_encode($formData);
+
+    $query = "UPDATE tests SET detail = ?, status = 1 WHERE id = ?";
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param('si', $jsonData, $id);
+
+    if ($stmt->execute()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public function inputTestResult($formData, $id)
@@ -402,5 +522,20 @@ class ReminderQCController
     }
     $output = implode('', $result);
     return $output;
+  }
+
+  function isSuperuser($pos)
+  {
+    //cocokin ke mysql
+    return $pos === 'user@example.com';
+  }
+
+  function isEmpty($data)
+  {
+    if (isset($data)) {
+      return $data;
+    } else {
+      return '';
+    }
   }
 }

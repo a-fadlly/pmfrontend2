@@ -32,6 +32,9 @@ $batches = $reminderQCController->getBatchesByProduct($_GET['id']);
                   <th>Mfg Date</th>
                   <th>Exp Date</th>
                   <th>Sample Date</th>
+                  <?php if ($reminderQCController->isSuperuser($_SESSION['usr_email'])) { ?>
+                    <th>Actions</th>
+                  <?php } ?>
                 </tr>
               </thead>
               <tbody>
@@ -43,6 +46,9 @@ $batches = $reminderQCController->getBatchesByProduct($_GET['id']);
                     <td><?= $batch["mfg_date"] ?></td>
                     <td><?= $batch["exp_date"] ?></td>
                     <td><?= $batch["sample_date"] ?></td>
+                    <?php if ($reminderQCController->isSuperuser($_SESSION['usr_email'])) { ?>
+                      <td><button class="btn btn-outline-danger py-0">Nonaktifkan</button></td>
+                    <?php } ?>
                   </tr>
                 <?php
                 }

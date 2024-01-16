@@ -8,6 +8,8 @@ if (empty($_SESSION["access_token"])) {
   $accessCase   = json_decode(getCaseInfo('cases/start-cases'));
   // $variables   = json_decode(getCaseInfo('cases/55990600565864968157623069715941/variables'));
   $variables   = json_decode(getCaseInfo('cases/' . $app_uid . '/variables'));
+
+  //var_dump($variables);
 }
 ?>
 
@@ -136,7 +138,7 @@ if (empty($_SESSION["access_token"])) {
 
                             foreach ($variables->cases->gridDetails as $id => $item) : ?>
                               <tr>
-                                <td><?php echo $item->rqd_line_list_label ?></td>
+                                <td><?php echo $id ?></td>
                                 <td><?php echo $item->rqd_part_list_label ?></td>
                                 <td><?php echo $item->rqd_part_desc1_list_label ?></td>
                                 <td><?php echo $item->rqd_req_qty_list_label ?></td>
