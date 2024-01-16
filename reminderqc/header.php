@@ -234,12 +234,6 @@
                             <span class="navi-text">Calendar</span>
                           </a>
                         </li>
-                        <li class="navi-item">
-                          <a class="navi-link" href="FormSample.php">
-                            <span class="navi-icon"><i class="fas fa-exchange-alt"></i></span>
-                            <span class="navi-text">Sample</span>
-                          </a>
-                        </li>
                       </ul>
                     </div>
                   </div>

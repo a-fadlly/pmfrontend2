@@ -36,7 +36,8 @@ $products = $reminderQCController->getProducts();
                     <!-- Event details will be displayed here -->
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="inputButton">Input</button>
+                    <button type="button" class="btn btn-primary" id="inputSampleButton">Input Sample</button>
+                    <button type="button" class="btn btn-primary" id="inputTestButton">Input Test</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                   </div>
                 </div>
@@ -162,17 +163,45 @@ $products = $reminderQCController->getProducts();
               "</div></div>" +
 
               "<div class='form-group'><div class='col-lg-12'>" +
-              "<label>Sample:</label>" +
-              "<p><strong>" + (response.sample_received ? 'Ya' : 'Belum diterima') + "</strong></p>" +
+              "<label>Status:</label>" +
+              "<p><strong>" + (response.sample_received ? 'Sudah terima sample' : 'Belum diterima sample') + "</strong></p>" +
               "</div></div>";
 
+            if (response.sample_received && response.handover != null) {
+
+              var handover = JSON.parse(response.handover);
+
+              modalBody +=
+                "<div class='form-group row'>" +
+                "<div class='col-lg-4'>" +
+                "<label>Pemberi:</label>" +
+                "<p><strong>" + handover.user + "</strong></p>" +
+                "</div>" +
+                "<div class='col-lg-4'>" +
+                "<label>Penerima:</label>" +
+                "<p><strong>" + handover.target + "</strong></p>" +
+                "</div>" +
+                "<div class='col-lg-4'>" +
+                "<label>TTD:</label>" +
+                "<p><img width='120' src='../controller/signatures/" + handover.filename + "'></p>" +
+                "</div>" +
+                "</div>";
+            }
+
             if (!response.sample_received) {
-              if (!$('#inputButton').hasClass('disabled')) {
-                $('#inputButton').addClass('disabled');
+              if (!$('#inputTestButton').hasClass('disabled')) {
+                $('#inputTestButton').addClass('disabled');
+              }
+              if ($('#inputSampleButton').hasClass('disabled')) {
+                $('#inputSampleButton').removeClass('disabled');
               }
             } else {
-              if ($('#inputButton').hasClass('disabled'))
-                $('#inputButton').removeClass('disabled');
+              if ($('#inputTestButton').hasClass('disabled')) {
+                $('#inputTestButton').removeClass('disabled');
+              }
+              if (!$('#inputSampleButton').hasClass('disabled')) {
+                $('#inputSampleButton').addClass('disabled');
+              }
             }
 
             $("#eventId").val(info.event.id);
@@ -188,7 +217,7 @@ $products = $reminderQCController->getProducts();
 
     calendar.render();
 
-    $('#inputButton').on('click', function() {
+    $('#inputTestButton').on('click', function() {
       if ($(this).hasClass('disabled')) {
         return;
       }
@@ -196,6 +225,17 @@ $products = $reminderQCController->getProducts();
       $('#eventModal').modal('hide');
       var id = $('#id').val();
       var url = 'InputResult.php?id=' + encodeURIComponent(id)
+      window.location.href = url;
+    });
+
+    $('#inputSampleButton').on('click', function() {
+      if ($(this).hasClass('disabled')) {
+        return;
+      }
+
+      $('#eventModal').modal('hide');
+      var id = $('#id').val();
+      var url = 'FormSampleFromCalendar.php?id=' + encodeURIComponent(id)
       window.location.href = url;
     });
   });

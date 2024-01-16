@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-group row realtime-input">
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    <label>Realtime:</label>
+                                    <label>Kondisi Penyimpanan (Realtime):</label>
                                     <input type="text" id="realtimeInput" name="realtimeInput" class="form-control">
                                 </div>
                             </div>
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-group row accelerated-input">
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    <label>Accelerated:</label>
+                                    <label>Kondisi Penyimpanan (Accelerated):</label>
                                     <input type="text" id="acceleratedInput" name="acceleratedInput" class="form-control">
                                 </div>
                             </div>
@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-group row ongoing-input">
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    <label>On-going:</label>
+                                    <label>Kondisi Penyimpanan (On-going):</label>
                                     <input type="text" name="ongoingInput" class="form-control">
                                 </div>
                             </div>

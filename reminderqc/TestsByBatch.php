@@ -8,7 +8,10 @@ if (empty($_GET["id"])) {
 
 $reminderQCController = new ReminderQCController($db);
 
-$testResults = $reminderQCController->getTestsByBatch2($_GET['id']);
+$type = isset($_GET['type']) ? $_GET['type'] : 'accelerated';
+
+
+$testResults = $reminderQCController->getTestsByBatch2($_GET['id'], $type);
 
 $pivotData = [];
 foreach ($testResults as $test) {
@@ -49,10 +52,6 @@ foreach ($testResults as $test) {
   <script src="../assets/plugins/global/plugins.bundlef552.js?v=7.1.8"></script>
   <script src="../assets/plugins/custom/prismjs/prismjs.bundlef552.js?v=7.1.8"></script>
   <script src="../assets/js/scripts.bundlef552.js?v=7.1.8"></script>
-  <script src="../assets/plugins/custom/datatables/datatables.bundlef552.js?v=7.1.8"></script>
-  <script src="../assets/js/pages/crud/forms/validation/form-widgetsf552.js?v=7.1.8"></script>
-  <script src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.9/index.global.min.js'></script>
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -226,11 +225,18 @@ foreach ($testResults as $test) {
                           </div>
                         </div>
                         <div class="card-body">
+                          <div class="form-group">
+                            <button id="accelerated" class="btn btn-primary">Accelerated</button>
+                            <button id="ongoing" class="btn btn-info">On-going</button>
+                            <button id="realtime" class="btn btn-warning">Realtime</button>
+                          </div>
                           <div class="table-responsive">
                             <table class="table table-bordered">
                               <thead>
                                 <tr>
-                                  <th>Pengujian<br><i>Testing</i></th>
+                                  <th>Pengujian<br>
+                                    <p class="font-italic">Testing</p>
+                                  </th>
                                   <?php
                                   foreach ($testResults as $test) {
                                     echo '<th>' . $test['date'] . '<br>Bulan-' . $test['month'] . '</th>';
@@ -243,12 +249,12 @@ foreach ($testResults as $test) {
                                 foreach ($pivotData as $variable => $data) {
                                 ?>
                                   <tr>
-                                    <td><?= $variable ?></td>
+                                    <td><?= $reminderQCController->breaksStringIntoNewLine($variable) ?></td>
                                     <?php
                                     foreach ($testResults as $test) {
                                       $value = isset($data[$test['month']]) ? $data[$test['month']] : '-';
                                     ?>
-                                      <td><?= $value ?></td>
+                                      <td><?= $reminderQCController->breaksStringIntoNewLine($value) ?></td>
                                     <?php
                                     }
                                     ?>
@@ -329,6 +335,30 @@ foreach ($testResults as $test) {
     <!--end::Content-->
   </div>
   <!-- end::User Panel-->
+  <script>
+    $(document).ready(function() {
+      $('#accelerated').click(function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('type', 'accelerated');
+        const newUrl = window.location.pathname + '?' + urlParams.toString();
+        window.location.href = newUrl;
+      });
+
+      $('#ongoing').click(function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('type', 'ongoing');
+        const newUrl = window.location.pathname + '?' + urlParams.toString();
+        window.location.href = newUrl;
+      });
+
+      $('#realtime').click(function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('type', 'realtime');
+        const newUrl = window.location.pathname + '?' + urlParams.toString();
+        window.location.href = newUrl;
+      });
+    });
+  </script>
 </body>
 
 </html>

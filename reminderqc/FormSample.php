@@ -6,7 +6,7 @@ $reminderQCController = new ReminderQCController($db);
 $products = $reminderQCController->getProductsThatHaveBatch();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $reminderQCController->inputTestSample($_POST, $_POST['month']);
+  $reminderQCController->inputTestSample($_POST);
 }
 ?>
 <?php include 'header.php' ?>

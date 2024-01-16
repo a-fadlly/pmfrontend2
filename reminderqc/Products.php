@@ -110,7 +110,7 @@ $products = $reminderQCController->getProducts();
               <span class="navi-text text-muted text-hover-primary"><?= $_SESSION['usr_email'] ?></span>
             </span>
           </a>
-          <a href="controller/common.php?action=logout" class="btn btn-sm btn-light-primary font-weight-bolder py-2 px-5">
+          <a href="../controller/common.php?action=logout" class="btn btn-sm btn-light-primary font-weight-bolder py-2 px-5">
             Sign Out
           </a>
         </div>

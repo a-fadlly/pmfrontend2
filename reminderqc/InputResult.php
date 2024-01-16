@@ -3,12 +3,11 @@ require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
 if (!isset($_GET["id"])) {
-  //header("Location: Calendar.php");
+  header("Location: Calendar.php");
 }
 
 $reminderQCController = new ReminderQCController($db);
-$test = $reminderQCController->getTest2($_GET['id']);
-
+$test = $reminderQCController->getTestForInputResultForm($_GET['id']);
 // var_dump($test);
 ?>
 <?php include 'header.php' ?>
@@ -30,7 +29,7 @@ $test = $reminderQCController->getTest2($_GET['id']);
           <div class="form-group">
             <div class="col-lg-12">
               <label>
-                Nomor Produk <i>(Product Number)</i>
+                Nomor Produk <span class="font-italic">(Product Number)</span>
               </label>
               <p><strong><?= $test["product_number"] ?></strong></p>
             </div>
@@ -38,7 +37,7 @@ $test = $reminderQCController->getTest2($_GET['id']);
           <div class="form-group">
             <div class="col-lg-12">
               <label>
-                Nama Produk <i>(Product name)</i>
+                Nama Produk <span class="font-italic">(Product name)</span>
               </label>
               <p><strong><?= $test["product_name"] ?></strong></p>
             </div>
@@ -46,7 +45,7 @@ $test = $reminderQCController->getTest2($_GET['id']);
           <div class="form-group">
             <div class="col-lg-12">
               <label>
-                Nomor Batch <i>(Batch Number)</i>
+                Nomor Batch <span class="font-italic">(Batch Number)</span>
               </label>
               <p><strong><?= $test["batch_number"] ?></strong></p>
             </div>
@@ -54,7 +53,7 @@ $test = $reminderQCController->getTest2($_GET['id']);
           <div class="form-group mb-3">
             <div class="col-lg-12">
               <label>
-                Tipe <i>(Type)</i>
+                Tipe <span class="font-italic">(Type)</span>
               </label>
               <p><strong><?= $test["type"] ?></strong></p>
             </div>
@@ -62,7 +61,7 @@ $test = $reminderQCController->getTest2($_GET['id']);
           <div class="form-group mb-3">
             <div class="col-lg-12">
               <label>
-                Kondisi Penyimpanan <i>(Storage conditions)</i>
+                Kondisi Penyimpanan <span class="font-italic">(Storage conditions)</span>
               </label>
               <?php
               $storage = json_decode($test["storage_conditions"], true);
@@ -213,7 +212,7 @@ $test = $reminderQCController->getTest2($_GET['id']);
           jsonData: JSON.stringify(jsonData)
         },
         success: function(response) {
-          console.log(response);
+          window.location.href = "Calendar.php";
         },
         error: function(error) {
           console.error(error);

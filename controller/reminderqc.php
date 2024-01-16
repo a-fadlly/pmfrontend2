@@ -220,7 +220,7 @@ class ReminderQCController
         CASE 
           WHEN date >= CURDATE() AND tests.sample_received = 0 AND tests.status = 0 THEN 'orange'
           WHEN date < CURDATE() AND tests.status = 0 THEN 'red'
-          WHEN date >= CURDATE() AND tests.sample_received = 1 AND tests.status = 0 THEN 'brown'
+          WHEN date >= CURDATE() AND tests.sample_received = 1 AND tests.status = 0 THEN 'grey'
           WHEN tests.status = 1 THEN 'green'
           ELSE 'black'
         END AS color,
@@ -266,7 +266,7 @@ class ReminderQCController
     return $result->fetch_assoc();
   }
 
-  public function getTestsByBatch2($batch_id)
+  public function getTestsByBatch2($batch_id, $type)
   {
     $query = "SELECT 
         p.number as product_number,
@@ -283,10 +283,10 @@ class ReminderQCController
     FROM products p
     JOIN batches b ON p.id = b.product_id
     LEFT JOIN tests t ON b.id = t.batch_id
-    WHERE b.id = ? AND t.type = 'realtime'";
+    WHERE b.id = ? AND t.type = ?";
 
     $stmt = $this->db->prepare($query);
-    $stmt->bind_param('i', $batch_id);
+    $stmt->bind_param('is', $batch_id, $type);
 
     $stmt->execute();
 
@@ -322,28 +322,40 @@ class ReminderQCController
 
     $result = $stmt->get_result();
 
-    $formattedData = [];
-
-    while ($row = $result->fetch_assoc()) {
-      $formattedData['product_number'] = $row['product_number'];
-      $formattedData['product_name'] = $row['product_name'];
-      $formattedData['batch_number'] = $row['batch_number'];
-      $formattedData['mfg_date'] = $row['mfg_date'];
-      $formattedData['exp_date'] = $row['exp_date'];
-      $formattedData['types'] = $row['types'];
-      $formattedData['tests'][] = [
-        'id' => $row['id'],
-        'type' => $row['type'],
-        'date' => $row['date'],
-        'month' => $row['month'],
-        'detail' => $row['detail'],
-      ];
-    }
-
-    return $formattedData;
+    return $result->fetch_all(MYSQLI_ASSOC);
   }
 
-  public function getTest2($batch_id)
+  public function getTestForSampleForm($batch_id)
+  {
+    $query = "
+    SELECT
+        t.id,
+        t.month,
+        p.number as product_number,
+        p.name as product_name,
+        b.batch_number,
+        b.mfg_date,
+        b.exp_date,
+        b.sample_date,
+        b.storage_conditions,
+        t.type    FROM products p
+    JOIN batches b ON p.id = b.product_id
+    LEFT JOIN tests t ON b.id = t.batch_id
+    WHERE t.id = ?
+    ";
+
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param('i', $batch_id);
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $row = $result->fetch_assoc();
+    return $row;
+  }
+
+  public function getTestForInputResultForm($batch_id)
   {
     $query = "
     SELECT
@@ -356,7 +368,7 @@ class ReminderQCController
         b.sample_date,
         b.storage_conditions,
         t.type,
-v.*
+        v.*
     FROM products p
     JOIN batches b ON p.id = b.product_id
     JOIN product_variables v ON p.id = v.product_id
@@ -473,10 +485,9 @@ v.*
     }
   }
 
-  public function inputTestSample($formData, $id)
+  public function inputTestSample($formData)
   {
-    // unset($formData['id']);
-    // unset($formData['signature_data']);
+    //unset($formData['id']);
     $base64Data = $formData['signature_data'];
 
     $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Data));
@@ -485,10 +496,13 @@ v.*
     $formData['filename'] = $filename;
     file_put_contents(__DIR__ . '/signatures/' . $filename, $imageData);
 
+    unset($formData['signature_data']);
+
+
     $jsonData = json_encode($formData);
     $query = "UPDATE tests SET handover = ?, sample_received = 1 WHERE id = ?";
     $stmt = $this->db->prepare($query);
-    $stmt->bind_param('si', $jsonData, $id);
+    $stmt->bind_param('si', $jsonData, $formData['id']);
 
     if ($stmt->execute()) {
       return true;
@@ -537,5 +551,24 @@ v.*
     } else {
       return '';
     }
+  }
+
+  function breaksStringIntoNewLine($words, $maxLength = 50)
+  {
+    $words = explode(' ', $words ?? '');
+    $formattedValue = '';
+    $currentLine = '';
+
+    foreach ($words as $word) {
+      if (strlen($currentLine) + strlen($word) > $maxLength) {
+        $formattedValue .= $currentLine . '<br>';
+        $currentLine = $word . ' ';
+      } else {
+        $currentLine .= $word . ' ';
+      }
+    }
+
+    $formattedValue .= $currentLine;
+    return rtrim($formattedValue);
   }
 }

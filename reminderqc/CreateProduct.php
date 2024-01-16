@@ -128,12 +128,12 @@
             `<div class="variable form-group row" data-variable-id="${variableId}">
                 <div class="col-lg-5">
                     <span class="drag-handle">&#x2195;</span>
-                    <label for="variable-${variableId}">Variable:</label>
+                    <label for="variable-${variableId}">Pengujian <span class="font-italic">Testing</span>:</label>
                     <input type="text" id="variable-${variableId}" name="variables[]" class="form-control">
                 </div>
                 <div class="col-lg-5">
-                    <label for="specification-${variableId}">Specification:</label>
-                    <input type="text" id="specification-${variableId}" name="specifications[]" class="form-control">
+                    <label for="specification-${variableId}">Spefifikasi <span class="font-italic">Specification</span>:</label>
+                    <textarea type="text" id="specification-${variableId}" name="specifications[]" class="form-control"></textarea>
                 </div>
                 <div class="col-lg-2">
                     <label for=""> </label>
@@ -175,7 +175,7 @@
                 variables: variableData
             },
             success: function(response) {
-                console.log("Ajax Success:", response);
+                window.location.href = "Products.php";
             },
             error: function(error) {
                 console.log("Ajax Error:", error);
