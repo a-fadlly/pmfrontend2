@@ -165,11 +165,11 @@ class ReminderQCController
     return $items;
   }
 
-  public function createBatch($product_id, $batch_number, $mfg_date, $exp_date, $sample_date, $types, $storage_conditions, $packaging_type)
+  public function createBatch($product_id, $batch_number, $mfg_date, $exp_date, $sample_date, $types, $storage_conditions, $packaging_type, $emails)
   {
-    $query = "INSERT INTO batches (product_id, batch_number, mfg_date, exp_date, sample_date, types, storage_conditions, packaging_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO batches (product_id, batch_number, mfg_date, exp_date, sample_date, types, storage_conditions, packaging_type, email_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $this->db->prepare($query);
-    $stmt->bind_param('isssssss', $product_id, $batch_number, $mfg_date, $exp_date, $sample_date, $types, $storage_conditions, $packaging_type);
+    $stmt->bind_param('issssssss', $product_id, $batch_number, $mfg_date, $exp_date, $sample_date, $types, $storage_conditions, $packaging_type, $emails);
 
     if ($stmt->execute()) {
       return $this->db->insert_id;
@@ -266,7 +266,7 @@ class ReminderQCController
     return $result->fetch_assoc();
   }
 
-  public function getTestsByBatch2($batch_id, $type)
+  public function getTestsByBatch($batch_id, $type)
   {
     $query = "SELECT 
         p.number as product_number,
@@ -291,37 +291,6 @@ class ReminderQCController
     $stmt->execute();
 
     $result = $stmt->get_result();
-    return $result->fetch_all(MYSQLI_ASSOC);
-  }
-
-  public function getTestsByBatch($batch_id)
-  {
-    $query = "
-    SELECT 
-        p.number as product_number,
-        p.name as product_name,
-        b.batch_number,
-        b.mfg_date,
-        b.exp_date,
-        b.types,
-        t.id,
-        t.type,
-        t.date,
-        t.month,
-        t.detail
-    FROM products p
-    JOIN batches b ON p.id = b.product_id
-    LEFT JOIN tests t ON b.id = t.batch_id
-    WHERE b.id = ?
-    ";
-
-    $stmt = $this->db->prepare($query);
-    $stmt->bind_param('i', $batch_id);
-
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-
     return $result->fetch_all(MYSQLI_ASSOC);
   }
 
@@ -355,7 +324,7 @@ class ReminderQCController
     return $row;
   }
 
-  public function getTestForInputResultForm($batch_id)
+  public function getTestForInputResultForm($test_id)
   {
     $query = "
     SELECT
@@ -377,7 +346,7 @@ class ReminderQCController
     ";
 
     $stmt = $this->db->prepare($query);
-    $stmt->bind_param('i', $batch_id);
+    $stmt->bind_param('i', $test_id);
 
     $stmt->execute();
 

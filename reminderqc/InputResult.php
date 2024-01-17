@@ -1,4 +1,11 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+if (empty($_SESSION["access_token"])) {
+  header("Location: ../login.php");
+}
+
 require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
@@ -8,7 +15,6 @@ if (!isset($_GET["id"])) {
 
 $reminderQCController = new ReminderQCController($db);
 $test = $reminderQCController->getTestForInputResultForm($_GET['id']);
-// var_dump($test);
 ?>
 <?php include 'header.php' ?>
 <div class="flex-row-fluid ml-lg-8 d-block" id="kt_inbox_list">

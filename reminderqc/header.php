@@ -1,4 +1,3 @@
-<?php include '../controller/common.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
@@ -11,11 +10,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <link rel="canonical" href="https://keenthemes.com/metronic" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+
   <link href="../assets/plugins/custom/datatables/datatables.bundlef552.css?v=7.1.8" rel="stylesheet" type="text/css" />
   <link href="../assets/plugins/global/plugins.bundlef552.css?v=7.1.8" rel="stylesheet" type="text/css" />
   <link href="../assets/plugins/custom/prismjs/prismjs.bundlef552.css?v=7.1.8" rel="stylesheet" type="text/css" />
   <link href="../assets/css/style.bundlef552.css?v=7.1.8" rel="stylesheet" type="text/css" />
+
   <link rel="shortcut icon" href="https://preview.keenthemes.com/metronic/theme/html/demo2/dist/assets/media/logos/favicon.ico" />
+
+
+  <script src="https://kit.fontawesome.com/5d09fddc6f.js" crossorigin="anonymous"></script>
+  <script src="../assets/plugins/global/plugins.bundlef552.js?v=7.1.8"></script>
+  <script src="../assets/plugins/custom/prismjs/prismjs.bundlef552.js?v=7.1.8"></script>
+  <script src="../assets/plugins/custom/datatables/datatables.bundlef552.js?v=7.1.8"></script>
+  <script src="../assets/js/pages/crud/forms/validation/form-widgetsf552.js?v=7.1.8"></script>
+  <script src="../assets/js/pages/crud/forms/widgets/bootstrap-datepickerf552.js?v=7.1.8"></script>
+  <script src="../assets/js/scripts.bundlef552.js?v=7.1.8"></script>
+
+  <script src="../assets/js/pages/crud/forms/widgets/select2f552.js?v=7.1.8"></script>
+
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.9/index.global.min.js'></script>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
   <style>
     .result {
       padding: 8px;
@@ -37,15 +53,45 @@
     .drag-handle {
       cursor: move;
     }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      background-color: #007bff;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .ui-autocomplete {
+      max-height: 150px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: absolute;
+      background-color: #fff;
+      border: 1px solid #ccc;
+    }
+
+    .ui-menu-item {
+      padding: 8px;
+      cursor: pointer;
+      list-style-type: none;
+      /* Remove the dot */
+      padding-left: 0;
+      /* Remove the extra padding on the left */
+    }
+
+    .ui-menu-item:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
   </style>
-  <script src="https://kit.fontawesome.com/5d09fddc6f.js" crossorigin="anonymous"></script>
-  <script src="../assets/plugins/global/plugins.bundlef552.js?v=7.1.8"></script>
-  <script src="../assets/plugins/custom/prismjs/prismjs.bundlef552.js?v=7.1.8"></script>
-  <script src="../assets/js/scripts.bundlef552.js?v=7.1.8"></script>
-  <script src="../assets/plugins/custom/datatables/datatables.bundlef552.js?v=7.1.8"></script>
-  <script src="../assets/js/pages/crud/forms/validation/form-widgetsf552.js?v=7.1.8"></script>
-  <script src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.9/index.global.min.js'></script>
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -145,7 +191,7 @@
                 <div class="topbar-item">
                   <div class="btn btn-icon btn-hover-transparent-white d-flex align-items-center btn-lg px-md-2 w-md-auto" id="kt_quick_user_toggle">
                     <span class="text-white opacity-70 font-weight-bold font-size-base d-none d-md-inline mr-1">Hi,</span>
-                    <span class="text-white opacity-90 font-weight-bolder font-size-base d-none d-md-inline mr-4">usr_lastname</span>
+                    <span class="text-white opacity-90 font-weight-bolder font-size-base d-none d-md-inline mr-4"><?= $_SESSION['usr_lastname'] ?></span>
                     <span class="symbol symbol-35">
                       <span class="symbol-label text-white font-size-h5 font-weight-bold bg-white-o-30">S</span>
                     </span>
@@ -183,7 +229,7 @@
                     <!--end::Item-->
                     <!--begin::Item-->
                     <span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
-                    <a href="<?= basename($_SERVER['REQUEST_URI'])  ?>" class="text-white text-hover-white opacity-75 hover-opacity-100"><?= pathinfo($_SERVER['REQUEST_URI'], PATHINFO_FILENAME)  ?></a>
+                    <a href="<?= basename($_SERVER['REQUEST_URI'])  ?>" class="text-white text-hover-white opacity-75 hover-opacity-100"><?= ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', pathinfo($_SERVER['REQUEST_URI'], PATHINFO_FILENAME)))  ?></a>
                     <!--end::Item-->
                   </div>
                   <!--end::Breadcrumb-->

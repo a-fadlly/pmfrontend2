@@ -1,4 +1,11 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+if (empty($_SESSION["access_token"])) {
+  header("Location: ../login.php");
+}
+
 require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
@@ -11,7 +18,7 @@ $reminderQCController = new ReminderQCController($db);
 $type = isset($_GET['type']) ? $_GET['type'] : 'accelerated';
 
 
-$testResults = $reminderQCController->getTestsByBatch2($_GET['id'], $type);
+$testResults = $reminderQCController->getTestsByBatch($_GET['id'], $type);
 
 $pivotData = [];
 foreach ($testResults as $test) {
@@ -30,7 +37,6 @@ foreach ($testResults as $test) {
 
 ?>
 
-<?php include '../controller/common.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
@@ -151,7 +157,7 @@ foreach ($testResults as $test) {
                 <div class="topbar-item">
                   <div class="btn btn-icon btn-hover-transparent-white d-flex align-items-center btn-lg px-md-2 w-md-auto" id="kt_quick_user_toggle">
                     <span class="text-white opacity-70 font-weight-bold font-size-base d-none d-md-inline mr-1">Hi,</span>
-                    <span class="text-white opacity-90 font-weight-bolder font-size-base d-none d-md-inline mr-4">usr_lastname</span>
+                    <span class="text-white opacity-90 font-weight-bolder font-size-base d-none d-md-inline mr-4"><?= $_SESSION['usr_lastname'] ?></span>
                     <span class="symbol symbol-35">
                       <span class="symbol-label text-white font-size-h5 font-weight-bold bg-white-o-30">S</span>
                     </span>
@@ -189,7 +195,7 @@ foreach ($testResults as $test) {
                     <!--end::Item-->
                     <!--begin::Item-->
                     <span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
-                    <a href="<?= basename($_SERVER['REQUEST_URI'])  ?>" class="text-white text-hover-white opacity-75 hover-opacity-100"><?= pathinfo($_SERVER['REQUEST_URI'], PATHINFO_FILENAME)  ?></a>
+                    <a href="<?= basename($_SERVER['REQUEST_URI'])  ?>" class="text-white text-hover-white opacity-75 hover-opacity-100"><?= ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', pathinfo($_SERVER['REQUEST_URI'], PATHINFO_FILENAME)))  ?></a>
                     <!--end::Item-->
                   </div>
                   <!--end::Breadcrumb-->

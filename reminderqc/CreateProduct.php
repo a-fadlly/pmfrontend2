@@ -1,4 +1,11 @@
-<?php include 'header.php' ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (empty($_SESSION["access_token"])) {
+    header("Location: ../login.php");
+}
+include 'header.php' ?>
 <div class="flex-row-fluid ml-lg-8 d-block" id="kt_inbox_list">
     <!--begin::Card-->
     <div class="card card-custom">
@@ -14,11 +21,11 @@
                 <div class="card-body">
                     <div class="form-group row ">
                         <div class="col-lg-6">
-                            <label>Item Number:</label>
+                            <label>Nomor Barang <span class="font-italic">(Item Number)</span>:</label>
                             <input id="number" name="number" type="text" class="form-control" />
                         </div>
                         <div class="col-lg-6">
-                            <label>Product Name:</label>
+                            <label>Nama Produk <span class="font-italic">(Product Name)</span>:</label>
                             <input id="name" name="name" type="text" class="form-control" />
                         </div>
                     </div>
@@ -128,11 +135,11 @@
             `<div class="variable form-group row" data-variable-id="${variableId}">
                 <div class="col-lg-5">
                     <span class="drag-handle">&#x2195;</span>
-                    <label for="variable-${variableId}">Pengujian <span class="font-italic">Testing</span>:</label>
+                    <label for="variable-${variableId}">Pengujian <span class="font-italic">(Testing)</span>:</label>
                     <input type="text" id="variable-${variableId}" name="variables[]" class="form-control">
                 </div>
                 <div class="col-lg-5">
-                    <label for="specification-${variableId}">Spefifikasi <span class="font-italic">Specification</span>:</label>
+                    <label for="specification-${variableId}">Spesifikasi <span class="font-italic">(Specification)</span>:</label>
                     <textarea type="text" id="specification-${variableId}" name="specifications[]" class="form-control"></textarea>
                 </div>
                 <div class="col-lg-2">
@@ -155,7 +162,7 @@
         var variableData = $("#variables-container .variable").map(function() {
             // var variableId = $(this).data("variable-id");
             var variableText = $(this).find('input[name="variables[]"]').val();
-            var specificationText = $(this).find('input[name="specifications[]"]').val();
+            var specificationText = $(this).find('textarea[name="specifications[]"]').val();
             return {
                 // variable_id: variableId,
                 variable: variableText,
@@ -163,24 +170,31 @@
             };
         }).get();
 
-        var number = $("#number").val();
-        var name = $("#name").val();
-
-        $.ajax({
-            url: "../api/post_create_product.php",
-            type: "POST",
-            data: {
-                number: number,
-                name: name,
-                variables: variableData
-            },
-            success: function(response) {
-                window.location.href = "Products.php";
-            },
-            error: function(error) {
-                console.log("Ajax Error:", error);
+        if (variableData.length > 0 && variableData[0].variable && variableData[0].specification) {
+            var productnumber = $("#number").val();
+            var productname = $("#name").val();
+            if (productnumber && productname) {
+                $.ajax({
+                    url: "../api/post_create_product.php",
+                    type: "POST",
+                    data: {
+                        number: productnumber,
+                        name: productname,
+                        variables: variableData
+                    },
+                    success: function(response) {
+                        window.location.href = "Products.php";
+                    },
+                    error: function(error) {
+                        console.log("Ajax Error:", error);
+                    }
+                });
+            } else {
+                alert('Product Number and Product Name cannot be null');
             }
-        });
+        } else {
+            alert('Testing and Specification cannot be null');
+        }
     }
 </script>
 </body>

@@ -1,4 +1,11 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+if (empty($_SESSION["access_token"])) {
+  header("Location: ../login.php");
+}
+
 require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
@@ -172,7 +179,7 @@ $products = $reminderQCController->getProducts();
               var handover = JSON.parse(response.handover);
 
               modalBody +=
-                "<div class='form-group row'>" +
+                "<div class='form-group row p-4'>" +
                 "<div class='col-lg-4'>" +
                 "<label>Pemberi:</label>" +
                 "<p><strong>" + handover.user + "</strong></p>" +
