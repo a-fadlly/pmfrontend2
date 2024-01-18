@@ -8,11 +8,11 @@ class ReminderQCController
     $this->db = $db;
   }
 
-  public function createProduct2($number, $name)
+  public function createProduct($number, $name, $variables)
   {
-    $query = "INSERT INTO products (number, name) VALUES (?, ?)";
+    $query = "INSERT INTO products (number, name, variables) VALUES (?, ?, ?)";
     $stmt = $this->db->prepare($query);
-    $stmt->bind_param('ss', $number, $name);
+    $stmt->bind_param('sss', $number, $name, $variables);
 
     if ($stmt->execute()) {
       return $this->db->insert_id;
@@ -21,72 +21,11 @@ class ReminderQCController
     }
   }
 
-  public function createProductVariable($product_id, $variable, $specification)
-  {
-    $query = "INSERT INTO product_variables (product_id, variable, specification) VALUES (?, ?, ?)";
-    $stmt = $this->db->prepare($query);
-    $stmt->bind_param('iss', $product_id, $variable, $specification);
-
-    if ($stmt->execute()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-
-  public function createProduct($number, $name, $variables)
-  {
-    $lines = explode("\n", $variables);
-    $resultArray = [];
-    foreach ($lines as $line) {
-      $values = explode(";", $line);
-      $resultArray[] = $values;
-    }
-
-    $dataArray = [];
-    foreach ($lines as $line) {
-      $line = trim($line);
-      if (!empty($line)) {
-        $dataArray[] = $line;
-      }
-    }
-
-    $jsonArray = json_encode($resultArray);
-
-    $query = "INSERT INTO products (number, name, variables) VALUES (?, ?, ?)";
-    $stmt = $this->db->prepare($query);
-    $stmt->bind_param('sss', $number, $name, $jsonArray);
-
-    if ($stmt->execute()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   public function editProduct($id, $number, $name, $variables)
   {
-    $lines = explode("\n", $variables);
-    $resultArray = [];
-    foreach ($lines as $line) {
-      $values = explode(";", $line);
-      $resultArray[] = $values;
-    }
-
-    $dataArray = [];
-    foreach ($lines as $line) {
-      $line = trim($line);
-      if (!empty($line)) {
-        $dataArray[] = $line;
-      }
-    }
-
-    $jsonArray = json_encode($resultArray);
-
     $query = "UPDATE products SET number = ?, name = ?, variables = ? WHERE id = ?";
     $stmt = $this->db->prepare($query);
-    $stmt->bind_param('sssi', $number, $name, $jsonArray, $id);
+    $stmt->bind_param('sssi', $number, $name, $variables, $id);
 
     if ($stmt->execute()) {
       return true;
@@ -251,7 +190,8 @@ class ReminderQCController
       date,
       tests.status,
       tests.sample_received,
-      tests.handover
+      tests.handover,
+      batches.id as bid
     FROM tests
     JOIN batches ON tests.batch_id = batches.id
     JOIN products ON batches.product_id = products.id
@@ -331,16 +271,15 @@ class ReminderQCController
         t.id,
         p.number as product_number,
         p.name as product_name,
+        p.variables,
         b.batch_number,
         b.mfg_date,
         b.exp_date,
         b.sample_date,
         b.storage_conditions,
-        t.type,
-        v.*
+        t.type
     FROM products p
     JOIN batches b ON p.id = b.product_id
-    JOIN product_variables v ON p.id = v.product_id
     LEFT JOIN tests t ON b.id = t.batch_id
     WHERE t.id = ?
     ";
@@ -364,11 +303,7 @@ class ReminderQCController
       $formattedData['sample_date'] = $row['sample_date'];
       $formattedData['storage_conditions'] = $row['storage_conditions'];
       $formattedData['type'] = $row['type'];
-      $formattedData['variables'][] = [
-        'id' => $row['id'],
-        'variable' => $row['variable'],
-        'specification' => $row['specification'],
-      ];
+      $formattedData['variables'] = json_decode($row['variables'], true);
     }
 
     return $formattedData;
@@ -423,24 +358,8 @@ class ReminderQCController
     return $response;
   }
 
-  public function inputTestResult2($formData, $id)
-  {
-    $jsonData = json_encode($formData);
-
-    $query = "UPDATE tests SET detail = ?, status = 1 WHERE id = ?";
-    $stmt = $this->db->prepare($query);
-    $stmt->bind_param('si', $jsonData, $id);
-
-    if ($stmt->execute()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   public function inputTestResult($formData, $id)
   {
-    unset($formData['id']);
     $jsonData = json_encode($formData);
 
     $query = "UPDATE tests SET detail = ?, status = 1 WHERE id = ?";

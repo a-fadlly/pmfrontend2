@@ -103,7 +103,7 @@ $test = $reminderQCController->getTestForInputResultForm($_GET['id']);
             <div class="form-group form-loop" data-index="<?= $key ?>">
               <div class="col-lg-12">
                 <label><?= rtrim($item["variable"]) ?>:</label>
-                <input id="result" name="result" class="form-control input-value" data-id="<?= $item["id"] ?>" data-variable="<?= $item["variable"] ?>" data-specification="<?= $item["specification"] ?>" />
+                <input id="result" name="result" class="form-control input-value" data-variable="<?= $item["variable"] ?>" data-specification="<?= $item["specification"] ?>" placeholder="<?= $item["specification"] ?>" />
               </div>
             </div>
           <?php } ?>
@@ -212,7 +212,7 @@ $test = $reminderQCController->getTestForInputResultForm($_GET['id']);
 
       $.ajax({
         type: "POST",
-        url: "../api/post_test_result2.php",
+        url: "../api/post_test_result.php",
         data: {
           id: id,
           jsonData: JSON.stringify(jsonData)

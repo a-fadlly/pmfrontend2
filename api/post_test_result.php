@@ -3,12 +3,13 @@ require_once('../config/db_connect.php');
 require_once('../controller/reminderqc.php');
 
 $id = $_POST['id'];
+$jsonData = $_POST['jsonData'];
 
 $reminderQCController = new ReminderQCController($db);
 
-$status = $reminderQCController->inputTestResult($_POST, $id);
+$status = $reminderQCController->inputTestResult($jsonData, $id);
 
 header('Content-Type: application/json');
-echo $status;
+echo json_encode($status);
 
 $db->close();

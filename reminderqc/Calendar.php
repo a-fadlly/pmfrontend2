@@ -195,6 +195,13 @@ $products = $reminderQCController->getProducts();
                 "</div>";
             }
 
+            if (response.status == 1) {
+              modalBody +=
+                "<div class='form-group row p-4'>" +
+                "<a href='TestsByBatch.php?id=" + response.bid + "&type=" + response.type + "'>Test Result</a>" +
+                "</div>";
+            }
+
             if (!response.sample_received) {
               if (!$('#inputTestButton').hasClass('disabled')) {
                 $('#inputTestButton').addClass('disabled');

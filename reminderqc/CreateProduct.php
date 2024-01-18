@@ -158,6 +158,19 @@ include 'header.php' ?>
         $("#variables-container").sortable("refresh");
     }
 
+    function cleanString(inputString) {
+        // Remove new lines
+        let stringWithoutNewLines = inputString.replace(/(\r\n|\n|\r)/gm, '');
+
+        // Remove extra spaces
+        let stringWithoutExtraSpaces = stringWithoutNewLines.replace(/\s+/g, ' ');
+
+        // Trim leading and trailing spaces
+        let trimmedString = stringWithoutExtraSpaces.trim();
+
+        return trimmedString;
+    }
+
     function submitProduct() {
         var variableData = $("#variables-container .variable").map(function() {
             // var variableId = $(this).data("variable-id");
@@ -165,8 +178,8 @@ include 'header.php' ?>
             var specificationText = $(this).find('textarea[name="specifications[]"]').val();
             return {
                 // variable_id: variableId,
-                variable: variableText,
-                specification: specificationText
+                variable: cleanString(variableText),
+                specification: cleanString(specificationText)
             };
         }).get();
 
@@ -180,7 +193,7 @@ include 'header.php' ?>
                     data: {
                         number: productnumber,
                         name: productname,
-                        variables: variableData
+                        variables: JSON.stringify(variableData)
                     },
                     success: function(response) {
                         window.location.href = "Products.php";

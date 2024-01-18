@@ -232,9 +232,13 @@ foreach ($testResults as $test) {
                         </div>
                         <div class="card-body">
                           <div class="form-group">
-                            <button id="accelerated" class="btn btn-primary">Accelerated</button>
-                            <button id="ongoing" class="btn btn-info">On-going</button>
-                            <button id="realtime" class="btn btn-warning">Realtime</button>
+                            <?php
+                            foreach (json_decode($testResults[0]['types'], true) as $type) {
+                            ?>
+                              <button id="<?= $type ?>" class="btn btn-primary"><?= $type ?></button>
+                            <?php
+                            }
+                            ?>
                           </div>
                           <div class="table-responsive">
                             <table class="table table-bordered">
